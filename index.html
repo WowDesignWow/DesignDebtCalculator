@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V6.1</title>
+    <title>設計治理與合規風險試算 V7</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -143,7 +143,7 @@
                 </div>
             </div>
 
-            <!-- Detailed Calculation Logic Explanation (Restored) -->
+            <!-- Detailed Calculation Logic Explanation -->
             <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
                 <div class="flex justify-between items-center cursor-pointer group" onclick="toggleLogic()">
                     <h3 class="text-sm font-bold text-slate-700 flex items-center">
@@ -213,8 +213,9 @@
 
     <!-- Result Modal -->
     <div id="resultModal" class="fixed inset-0 bg-slate-900/80 flex items-end sm:items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity opacity-0">
-        <div class="bg-white w-full max-w-sm sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300" id="modalContent">
+        <div class="bg-white w-full max-w-sm sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto" id="modalContent">
             
+            <!-- Modal Header -->
             <div class="flex justify-between items-start mb-4">
                 <div>
                     <h2 class="text-slate-500 text-xs font-bold uppercase tracking-widest">年度預估總衝擊</h2>
@@ -223,41 +224,62 @@
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
             </div>
 
-            <div class="text-4xl font-black text-slate-800 mb-4 tracking-tight" id="finalResult">$0</div>
+            <!-- Big Result Number -->
+            <div class="text-4xl font-black text-slate-800 mb-6 tracking-tight" id="finalResult">$0</div>
+
+            <!-- Opportunity Cost (New Section) -->
+            <div class="mb-6 relative">
+                <div class="absolute inset-0 bg-blue-50 rounded-xl transform -rotate-1 opacity-50"></div>
+                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
+                    <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wide mb-3 flex items-center">
+                        <i class="fas fa-search-dollar mr-1.5"></i> 這筆錢原本可以拿來...
+                    </h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <!-- Hiring -->
+                        <div class="bg-blue-50 rounded-lg p-3 text-center border border-blue-100">
+                            <i class="fas fa-user-plus text-blue-500 text-lg mb-1"></i>
+                            <div class="text-[10px] text-slate-500 font-medium mb-0.5">增聘資深戰力</div>
+                            <div class="text-sm font-bold text-blue-700">
+                                <span id="hireCount">0</span> <span class="text-xs font-normal">人</span>
+                            </div>
+                        </div>
+                        <!-- Hardware -->
+                        <div class="bg-gray-100 rounded-lg p-3 text-center border border-gray-200">
+                            <i class="fas fa-laptop text-gray-600 text-lg mb-1"></i>
+                            <div class="text-[10px] text-slate-500 font-medium mb-0.5">買頂規 Mac</div>
+                            <div class="text-sm font-bold text-gray-800">
+                                <span id="macCount">0</span> <span class="text-xs font-normal">台</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="text-[10px] text-slate-400 mt-2 text-center">
+                        (約 <span id="engCount" class="font-medium text-slate-600">0</span> 位工程師 或 <span id="desCount" class="font-medium text-slate-600">0</span> 位設計師)
+                    </p>
+                </div>
+            </div>
             
             <!-- Breakdown -->
-            <div class="space-y-3 mb-6">
+            <div class="space-y-3 mb-6 border-t border-slate-100 pt-4">
+                <h4 class="text-[10px] font-bold text-slate-400 uppercase">損失細項</h4>
                 <!-- Efficiency -->
-                <div class="bg-orange-50 border border-orange-100 p-3 rounded-xl flex justify-between items-center">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mr-3"><i class="fas fa-hourglass-half text-sm"></i></div>
-                        <div class="text-xs text-slate-600 font-medium">效率浪費 (年)</div>
+                <div class="flex justify-between items-center text-xs">
+                    <div class="flex items-center text-slate-600">
+                        <i class="fas fa-hourglass-half text-orange-400 w-5 text-center mr-2"></i>效率浪費
                     </div>
-                    <div class="text-sm font-bold text-orange-600" id="efficiencyResult">$0</div>
+                    <div class="font-bold text-slate-700" id="efficiencyResult">$0</div>
                 </div>
 
                 <!-- Risk -->
-                <div id="riskBreakdown" class="hidden bg-red-50 border border-red-100 p-3 rounded-xl flex justify-between items-center">
-                    <div class="flex items-center">
-                        <div class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3"><i class="fas fa-gavel text-sm"></i></div>
-                        <div class="text-xs text-slate-600 font-medium">合規風險敞口</div>
+                <div id="riskBreakdown" class="hidden flex justify-between items-center text-xs">
+                    <div class="flex items-center text-slate-600">
+                        <i class="fas fa-gavel text-red-400 w-5 text-center mr-2"></i>合規風險
                     </div>
-                    <div class="text-sm font-bold text-red-600" id="riskResult">$0</div>
+                    <div class="font-bold text-red-600" id="riskResult">$0</div>
                 </div>
             </div>
 
-            <!-- Insight Box -->
-            <div class="bg-slate-50 rounded-xl p-4 text-left border border-slate-200 mb-6">
-                <h3 class="font-bold text-slate-700 text-sm mb-2"><i class="fas fa-lightbulb text-yellow-500 mr-1"></i> 數據洞察</h3>
-                <ul class="text-xs text-slate-600 space-y-2 list-disc pl-4">
-                    <li>設計端：因無 SSOT 與元件狀態管理，5人團隊每年浪費 <span id="desHours" class="font-bold">0</span> 小時。</li>
-                    <li>開發端：因樣式不統一需 Override，3人團隊每年浪費 <span id="devHours" class="font-bold">0</span> 小時。</li>
-                    <li id="riskInsight" class="hidden text-red-600 font-semibold">注意：未通過 WCAG 可能導致高額法律罰款或業務停擺。</li>
-                </ul>
-            </div>
-
-            <button onclick="closeModal()" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition">
-                關閉
+            <button onclick="closeModal()" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition shadow-lg">
+                關閉並調整策略
             </button>
         </div>
     </div>
@@ -312,6 +334,9 @@
             const annualSalaryPackage = salary * months;
             const monthlyAvg = annualSalaryPackage / 12;
             const hourlyCost = (monthlyAvg * multiplier) / hoursPerMonth;
+            
+            // Calculate Base Annual Fully Loaded Cost per person for Opportunity Cost
+            const personAnnualCost = annualSalaryPackage * multiplier;
 
             // 2. Efficiency Loss Calculation
             const desAnnualHours = nDes * tDes * workDays;
@@ -319,40 +344,50 @@
             const efficiencyLoss = (desAnnualHours + devAnnualHours) * hourlyCost;
 
             // 3. Total Risk
-            // Risk value is hard added (simulating a one-time potential fine or annual risk exposure)
-            // If risk is "1" (Taiwan Gov), we just use it as a flag, strictly 0 monetary value added but shown as "Loss of Opportunity"
             let finalRiskCost = riskValue;
             if (riskValue === 1) finalRiskCost = 0; 
 
             const totalImpact = efficiencyLoss + finalRiskCost;
 
+            // 4. Opportunity Cost Calculation
+            // Assumptions: 
+            // Senior Engineer = 1.1x Avg Fully Loaded Cost
+            // Senior Designer = 0.9x Avg Fully Loaded Cost (relative to base)
+            // MacBook Pro = 80,000 TWD
+            const engCost = personAnnualCost * 1.1;
+            const desCost = personAnnualCost * 0.9;
+            const macbookCost = 80000;
+
+            const hireEngCount = totalImpact / engCost;
+            const hireDesCount = totalImpact / desCost;
+            const macbookCount = totalImpact / macbookCost;
+
             // Update UI
             document.getElementById('finalResult').innerText = formatCurrency(totalImpact);
             document.getElementById('efficiencyResult').innerText = formatCurrency(efficiencyLoss);
             
+            // Opportunity Cost UI
+            document.getElementById('hireCount').innerText = hireEngCount.toFixed(1); // Use Eng count as primary display
+            document.getElementById('engCount').innerText = hireEngCount.toFixed(1);
+            document.getElementById('desCount').innerText = hireDesCount.toFixed(1);
+            document.getElementById('macCount').innerText = Math.floor(macbookCount).toLocaleString();
+
             // Risk UI Logic
             const riskEl = document.getElementById('riskBreakdown');
             const riskRes = document.getElementById('riskResult');
-            const riskInsight = document.getElementById('riskInsight');
-
+            
             if (document.getElementById('wcagToggle').checked && riskValue > 0) {
                 riskEl.classList.remove('hidden');
-                riskInsight.classList.remove('hidden');
                 if (riskValue === 1) {
                     riskRes.innerText = "標案資格喪失";
-                    riskRes.className = "text-sm font-bold text-red-600";
+                    riskRes.className = "font-bold text-red-600";
                 } else {
                     riskRes.innerText = formatCurrency(riskValue);
-                    riskRes.className = "text-sm font-bold text-red-600";
+                    riskRes.className = "font-bold text-red-600";
                 }
             } else {
                 riskEl.classList.add('hidden');
-                riskInsight.classList.add('hidden');
             }
-
-            // Insight Numbers
-            document.getElementById('desHours').innerText = Math.round(desAnnualHours).toLocaleString();
-            document.getElementById('devHours').innerText = Math.round(devAnnualHours).toLocaleString();
 
             // Show Modal
             const modal = document.getElementById('resultModal');
