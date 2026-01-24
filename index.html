@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算</title>
+    <title>設計治理與合規風險試算 V11</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -14,9 +14,12 @@
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; }
         .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
         .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        
+        /* Global Scrollbar Styling */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
 
         /* --- Slot Machine Styles --- */
         .slot-machine-wrapper {
@@ -51,16 +54,19 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Table Styles for Markdown Content */
+        /* --- Markdown Table Styles --- */
         .prose { max-width: none; }
         .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1em; font-size: 11px; }
-        .prose th, .prose td { border: 1px solid #e2e8f0; padding: 8px; text-align: left; vertical-align: top; }
-        .prose th { background-color: #f8fafc; font-weight: 700; color: #475569; }
-        /* Ensure table is scrollable */
+        .prose th, .prose td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; vertical-align: top; }
+        .prose th { background-color: #f1f5f9; font-weight: 700; color: #334155; position: sticky; top: 0; }
+        /* Ensure table is scrollable horizontally */
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        
+        .prose h1 { font-size: 1.25em; font-weight: 800; margin-bottom: 0.5em; color: #1e293b; }
         .prose ul { list-style-type: disc; padding-left: 1.2em; margin-top: 0.2em; }
         .prose li { margin-bottom: 0.2em; }
-        .prose strong { color: #334155; }
+        .prose strong { color: #0f172a; font-weight: 700; }
+        .prose code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #ef4444; font-size: 0.9em; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -306,11 +312,15 @@
                             <i class="fas fa-chevron-down text-slate-400 transition-transform" id="effDetailsIcon"></i>
                         </div>
                     </div>
-                    <!-- Dynamic Markdown Content Container -->
-                    <div id="efficiencyDetailsContent" class="hidden mt-3 pt-3 border-t border-slate-200 text-xs text-slate-600">
-                        <div class="table-container prose prose-sm max-w-none">
-                            <!-- Content injected by JS -->
-                            載入說明中...
+                    
+                    <!-- Dynamic Markdown Content Container (UPDATED SCROLLING) -->
+                    <!-- Added max-height and overflow-y-auto here for inner scrolling -->
+                    <div id="efficiencyDetailsContent" class="hidden mt-3 border-t border-slate-200">
+                        <div class="max-h-[300px] overflow-y-auto p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
+                            <div class="table-container prose prose-sm max-w-none">
+                                <!-- Content injected by JS -->
+                                載入說明中...
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -331,7 +341,7 @@
     </div>
 
     <script>
-        // --- UPDATED DEFAULT MARKDOWN CONTENT (With full table) ---
+        // --- UPDATED DEFAULT MARKDOWN CONTENT ---
         const defaultMarkdown = `
 # 設計債對工程開發效率之影響分析
 
@@ -349,13 +359,12 @@
         async function loadMarkdown() {
             const container = document.querySelector('#efficiencyDetailsContent .table-container');
             try {
-                // Try fetching external file first
+                // Try fetch
                 const response = await fetch('efficiency_loss.md');
                 if (response.ok) {
                     const text = await response.text();
                     container.innerHTML = marked.parse(text);
                 } else {
-                    // Fallback to internal const
                     container.innerHTML = marked.parse(defaultMarkdown);
                     console.log("Using default markdown due to fetch failure");
                 }
