@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V11</title>
+    <title>設計治理與合規風險試算 V15</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -25,10 +25,10 @@
         .slot-machine-wrapper {
             display: inline-flex;
             align-items: baseline;
-            overflow: hidden;
             font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             font-weight: 900;
             line-height: 1;
+            white-space: nowrap; 
         }
         .slot-digit-window {
             display: inline-block;
@@ -54,12 +54,25 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* --- Markdown Table Styles --- */
+        /* --- Markdown Table Styles (Equal Distribution) --- */
         .prose { max-width: none; }
-        .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1em; font-size: 11px; }
-        .prose th, .prose td { border: 1px solid #e2e8f0; padding: 10px; text-align: left; vertical-align: top; }
+        .prose table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin-bottom: 1em; 
+            font-size: 11px; 
+            table-layout: fixed; 
+        }
+        .prose th, .prose td { 
+            border: 1px solid #e2e8f0; 
+            padding: 10px; 
+            text-align: left; 
+            vertical-align: top;
+            width: 20%; 
+            word-wrap: break-word; 
+            overflow-wrap: break-word;
+        }
         .prose th { background-color: #f1f5f9; font-weight: 700; color: #334155; position: sticky; top: 0; }
-        /* Ensure table is scrollable horizontally */
         .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
         
         .prose h1 { font-size: 1.25em; font-weight: 800; margin-bottom: 0.5em; color: #1e293b; }
@@ -67,6 +80,14 @@
         .prose li { margin-bottom: 0.2em; }
         .prose strong { color: #0f172a; font-weight: 700; }
         .prose code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #ef4444; font-size: 0.9em; }
+
+        /* --- Interactive Hover Styles --- */
+        .interactive-element:hover {
+            border-color: #60a5fa; /* blue-400 */
+        }
+        input[type="number"]:hover, select:hover {
+            border-color: #60a5fa;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -75,7 +96,7 @@
         
         <!-- App Header -->
         <div class="gradient-bg p-6 text-white text-center flex-shrink-0 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-balance-scale text-6xl"></i></div>
+            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-chart-line text-6xl"></i></div>
             <h1 class="text-2xl font-bold mb-1 tracking-wide">設計治理與風險試算</h1>
             <p class="text-slate-300 text-xs uppercase tracking-wider font-semibold">Efficiency Loss + Compliance Risk</p>
         </div>
@@ -92,14 +113,55 @@
                 <div class="space-y-3">
                     <div>
                         <label class="text-xs text-slate-500 font-bold uppercase block mb-1">平均月薪 (TWD)</label>
-                        <input type="number" id="salary" value="70000" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
+                        <input type="number" id="salary" value="70000" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-colors">
                     </div>
+                    
+                    <!-- Modified Bonus Section -->
                     <div>
-                        <label class="text-xs text-slate-500 font-bold uppercase block mb-1">年薪月數 (含年終)</label>
-                        <div class="flex space-x-2">
-                            <label class="flex-1 cursor-pointer"><input type="radio" name="months" value="13" class="peer sr-only"><div class="text-center text-xs py-2 border rounded-md peer-checked:bg-blue-600 peer-checked:text-white transition">13個月</div></label>
-                            <label class="flex-1 cursor-pointer"><input type="radio" name="months" value="14" class="peer sr-only" checked><div class="text-center text-xs py-2 border rounded-md peer-checked:bg-blue-600 peer-checked:text-white transition">14個月</div></label>
+                        <label class="text-xs text-slate-500 font-bold uppercase block mb-2">年終／獎金</label>
+                        <div class="space-y-2">
+                            <!-- Button Group: 14 Months & None -->
+                            <div class="flex space-x-2">
+                                <!-- Option 1: 14 Months -->
+                                <label class="cursor-pointer block flex-1">
+                                    <input type="radio" name="bonusType" value="14" id="bonusFixedRadio" class="peer sr-only" checked onchange="toggleBonusInput()">
+                                    <div id="fixedBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
+                                        固定 14 個月
+                                    </div>
+                                </label>
+                                <!-- Option 2: None (12 Months) -->
+                                <label class="cursor-pointer block flex-1">
+                                    <input type="radio" name="bonusType" value="12" id="bonusNoneRadio" class="peer sr-only" onchange="toggleBonusInput()">
+                                    <div id="noneBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
+                                        無
+                                    </div>
+                                </label>
+                            </div>
+                            
+                            <!-- Option 3: Custom Input (Border Separator, 4:1 Ratio) -->
+                            <div class="flex items-center space-x-2">
+                                <div class="relative w-full">
+                                    <!-- Radio for Custom (Hidden) -->
+                                    <input type="radio" name="bonusType" value="custom" id="bonusCustomRadio" class="peer sr-only" onchange="toggleBonusInput()">
+                                    
+                                    <!-- Input Wrapper (Handles Border & Focus) -->
+                                    <div id="customBonusWrapper" class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden transition-all cursor-text hover:border-blue-400" onclick="selectCustomRadio()">
+                                        <!-- Input Field (80%) -->
+                                        <input type="number" id="customBonus" placeholder="輸入自訂獎金總額" 
+                                            class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-semibold text-slate-700 focus:outline-none placeholder-slate-400"
+                                            onfocus="selectCustomRadio()">
+                                        <!-- Unit Label (20%) - Centered with Left Border -->
+                                        <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
+                                            元 (TWD)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+                        <p class="text-[10px] text-slate-400 mt-1.5 flex items-start">
+                            <i class="fas fa-info-circle mr-1 mt-0.5"></i>
+                            <span id="bonusHint">系統會將獎金自動攤提至每月月薪成本中。</span>
+                        </p>
                     </div>
                 </div>
             </div>
@@ -123,16 +185,22 @@
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <div class="relative">
-                                <input type="number" id="nDes" value="5" class="w-full border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                                <span class="absolute right-3 top-2 text-xs text-slate-400 pointer-events-none">人</span>
+                            <!-- Split Border Input -->
+                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
+                                <input type="number" id="nDes" value="5" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
+                                    人
+                                </div>
                             </div>
                         </div>
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <div class="relative">
-                                <input type="number" id="tDes" value="0.75" step="0.25" class="w-full border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-orange-50/30">
-                                <span class="absolute right-3 top-2 text-xs text-slate-400 pointer-events-none">小時</span>
+                            <!-- Split Border Input -->
+                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
+                                <input type="number" id="tDes" value="0.75" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
+                                    小時
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -149,16 +217,22 @@
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <div class="relative">
-                                <input type="number" id="nDev" value="3" class="w-full border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none">
-                                <span class="absolute right-3 top-2 text-xs text-slate-400 pointer-events-none">人</span>
+                            <!-- Split Border Input -->
+                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
+                                <input type="number" id="nDev" value="3" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
+                                    人
+                                </div>
                             </div>
                         </div>
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <div class="relative">
-                                <input type="number" id="tDev" value="0.5" step="0.25" class="w-full border border-slate-300 rounded-lg p-2 text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none bg-orange-50/30">
-                                <span class="absolute right-3 top-2 text-xs text-slate-400 pointer-events-none">小時</span>
+                            <!-- Split Border Input -->
+                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
+                                <input type="number" id="tDev" value="0.5" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
+                                    小時
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -175,7 +249,7 @@
                     </div>
                     <label class="relative inline-flex items-center cursor-pointer">
                         <input type="checkbox" id="wcagToggle" class="sr-only peer" onchange="toggleWcagOptions()">
-                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600"></div>
+                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600 transition-colors"></div>
                     </label>
                 </div>
                 
@@ -184,7 +258,7 @@
                         <i class="fas fa-exclamation-triangle"></i> 
                         2025/2026 EAA 與 ADA 強制執行，違規將面臨高額罰款。
                     </p>
-                    <select id="riskRegion" class="w-full text-sm border-red-200 border rounded-lg p-2.5 bg-red-50 text-slate-700 focus:ring-red-500">
+                    <select id="riskRegion" class="w-full text-sm border-red-200 border rounded-lg p-2.5 bg-red-50 text-slate-700 focus:ring-red-500 transition-colors hover:border-blue-400">
                         <option value="0">請選擇目標市場風險...</option>
                         <option value="600000">🇺🇸 美國 (ADA 訴訟風險 ~2萬美金)</option>
                         <option value="3300000">🇪🇺 歐盟 (EAA 罰鍰上限風險 ~10萬歐元)</option>
@@ -215,9 +289,9 @@
                             <span class="w-4 h-4 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] mr-2">1</span>
                             真實人力成本 (Fully Loaded Cost)
                         </h4>
-                        <p class="pl-6 mb-2">公式：<code class="bg-slate-100 px-1 rounded text-slate-800">(月薪 × 年薪月數 ÷ 12) × 1.5 ÷ 160小時</code></p>
+                        <p class="pl-6 mb-2">公式：<code class="bg-slate-100 px-1 rounded text-slate-800">((月薪 × 12 + 年終獎金) ÷ 12) × 1.5 ÷ 160小時</code></p>
                         <p class="pl-6 text-slate-500 mb-2">
-                            <strong>年終攤提：</strong> 將年薪總額（含13或14個月）攤提至每月，反映真實月支出。
+                            <strong>年終攤提：</strong> 將年薪與額外獎金總額攤提至每月，反映公司實際支付的月平均現金流。
                         </p>
                         <p class="pl-6 text-slate-500">
                             <strong>1.5倍營運係數：</strong> 涵蓋勞健保(約20%)、退休金(6%)、辦公室租金、軟體授權(Adobe/Figma)、硬體折舊與管理費。
@@ -273,15 +347,16 @@
                 <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
             </div>
 
-            <!-- SLOT MACHINE RESULT (Red + Negative) -->
-            <div class="text-5xl font-black text-red-600 mb-8 tracking-tight h-12 overflow-hidden" id="finalResultContainer">
+            <!-- SLOT MACHINE RESULT (Red + Negative) with "Pre-text" -->
+            <!-- Updated: Font size fixed to 40px as requested -->
+            <div class="text-[40px] font-black text-red-600 mb-8 tracking-tight flex items-center justify-center flex-wrap" id="finalResultContainer">
                 -$0
             </div>
 
             <!-- Opportunity Cost Slider Section -->
             <div class="mb-6 relative group">
                 <div class="absolute inset-0 bg-blue-50 rounded-xl transform -rotate-1 opacity-50"></div>
-                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm">
+                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm overflow-hidden"> <!-- overflow hidden for gradient -->
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wide flex items-center">
                             <i class="fas fa-search-dollar mr-1.5"></i> 這筆錢原本可以拿來...
@@ -291,9 +366,14 @@
                         </div>
                     </div>
                     
-                    <!-- Scrollable Container -->
-                    <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch" id="opportunitySlider">
-                        <!-- Items will be injected by JS -->
+                    <!-- Wrapper for slider + fade -->
+                    <div class="relative">
+                        <!-- Scrollable Container -->
+                        <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch" id="opportunitySlider">
+                            <!-- Items will be injected by JS -->
+                        </div>
+                        <!-- Fade Overlay on Right (Added ID and Transition) -->
+                        <div id="sliderFadeOverlay" class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
                     </div>
                 </div>
             </div>
@@ -314,7 +394,6 @@
                     </div>
                     
                     <!-- Dynamic Markdown Content Container (UPDATED SCROLLING) -->
-                    <!-- Added max-height and overflow-y-auto here for inner scrolling -->
                     <div id="efficiencyDetailsContent" class="hidden mt-3 border-t border-slate-200">
                         <div class="max-h-[300px] overflow-y-auto p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
                             <div class="table-container prose prose-sm max-w-none">
@@ -365,6 +444,7 @@
                     const text = await response.text();
                     container.innerHTML = marked.parse(text);
                 } else {
+                    // Fallback to internal const
                     container.innerHTML = marked.parse(defaultMarkdown);
                     console.log("Using default markdown due to fetch failure");
                 }
@@ -385,6 +465,54 @@
             } else {
                 content.classList.add('hidden');
                 icon.classList.remove('rotate-180');
+            }
+        }
+
+        // --- NEW FUNCTION: SELECT CUSTOM RADIO ON INPUT FOCUS ---
+        function selectCustomRadio() {
+            const radio = document.getElementById('bonusCustomRadio');
+            if (!radio.checked) {
+                radio.checked = true;
+                toggleBonusInput();
+            }
+        }
+
+        // --- TOGGLE BONUS INPUT VISUALS ---
+        function toggleBonusInput() {
+            const customRadio = document.getElementById('bonusCustomRadio');
+            const customBonusWrapper = document.getElementById('customBonusWrapper');
+            const fixedBtn = document.getElementById('fixedBonusBtn');
+            const noneBtn = document.getElementById('noneBonusBtn');
+            const hint = document.getElementById('bonusHint');
+            
+            // Custom Input Active State
+            if (customRadio.checked) {
+                // Activate Wrapper (Active Blue Border)
+                customBonusWrapper.classList.remove('bg-slate-50', 'border-slate-300');
+                customBonusWrapper.classList.add('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
+                
+                // Deactivate Buttons (Gray out)
+                fixedBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300'); 
+                fixedBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
+                
+                noneBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300');
+                noneBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
+
+                hint.innerText = "已啟用自訂獎金，將攤提至每月成本。";
+            } else {
+                // Button Selected (14 or None)
+                // Deactivate Wrapper
+                customBonusWrapper.classList.add('bg-slate-50', 'border-slate-300');
+                customBonusWrapper.classList.remove('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
+                
+                // Reset Button Styles to Default (Let CSS peer-checked take over for the selected one)
+                fixedBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
+                fixedBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
+                
+                noneBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
+                noneBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
+                
+                hint.innerText = "系統會將獎金自動攤提至每月月薪成本中。";
             }
         }
 
@@ -417,7 +545,9 @@
 
         // --- SLOT MACHINE ANIMATION ENGINE ---
         function runSlotMachineAnimation(container, finalValue) {
-            const formattedString = "-" + new Intl.NumberFormat('zh-TW', { 
+            // Update: Added extra space for visual separation and ensured minus is attached to number
+            // "預估損失  -" (Double space to ensure gap visibility in HTML rendering)
+            const formattedString = "預估損失  -" + new Intl.NumberFormat('zh-TW', { 
                 style: 'currency', 
                 currency: 'TWD', 
                 maximumFractionDigits: 0 
@@ -462,6 +592,11 @@
                 } else {
                     const span = document.createElement('span');
                     span.textContent = char;
+                    // Preserve space width
+                    if (char === ' ') {
+                        span.style.width = '0.25em'; 
+                        span.style.display = 'inline-block';
+                    }
                     container.appendChild(span);
                 }
             });
@@ -552,21 +687,52 @@
             container.appendChild(customCard);
         }
 
+        // --- NEW FUNCTION: SLIDER SCROLL LOGIC ---
+        function initSliderScroll() {
+            const slider = document.getElementById('opportunitySlider');
+            const overlay = document.getElementById('sliderFadeOverlay');
+            
+            // Reset state
+            overlay.classList.remove('opacity-0');
+            
+            slider.onscroll = () => {
+                // Buffer of 5px
+                const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5;
+                if (isEnd) {
+                    overlay.classList.add('opacity-0');
+                } else {
+                    overlay.classList.remove('opacity-0');
+                }
+            };
+        }
+
         // --- MAIN CALCULATE ---
         function calculate() {
             const salary = parseFloat(document.getElementById('salary').value) || 0;
-            const months = parseFloat(document.querySelector('input[name="months"]:checked').value);
             const nDes = parseFloat(document.getElementById('nDes').value) || 0;
             const tDes = parseFloat(document.getElementById('tDes').value) || 0;
             const nDev = parseFloat(document.getElementById('nDev').value) || 0;
             const tDev = parseFloat(document.getElementById('tDev').value) || 0;
             const riskValue = parseFloat(document.getElementById('riskRegion').value) || 0;
 
+            // Handle Bonus Logic
+            const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
+            let annualSalaryPackage = 0;
+
+            if (bonusType === '14') {
+                annualSalaryPackage = salary * 14;
+            } else if (bonusType === '12') {
+                // "None" option -> 12 months only
+                annualSalaryPackage = salary * 12;
+            } else {
+                const customBonus = parseFloat(document.getElementById('customBonus').value) || 0;
+                annualSalaryPackage = (salary * 12) + customBonus;
+            }
+
             const multiplier = 1.5; 
             const workDays = 250;
             const hoursPerMonth = 160;
 
-            const annualSalaryPackage = salary * months;
             const monthlyAvg = annualSalaryPackage / 12;
             const hourlyCost = (monthlyAvg * multiplier) / hoursPerMonth;
             const personAnnualCost = annualSalaryPackage * multiplier;
@@ -612,6 +778,9 @@
             modal.classList.remove('opacity-0');
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
+            
+            // Initialize Slider Scroll Logic
+            initSliderScroll();
         }
 
         function closeModal() {
