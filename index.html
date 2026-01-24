@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V17 (140項資料庫)</title>
+    <title>設計治理與合規風險試算 V17.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -377,9 +377,9 @@
                         </div>
                     </div>
                     
-                    <!-- Dynamic Markdown Content Container -->
+                    <!-- Dynamic Markdown Content Container (NO HEIGHT LIMIT) -->
                     <div id="efficiencyDetailsContent" class="hidden mt-3 border-t border-slate-200">
-                        <div class="max-h-[300px] overflow-y-auto p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
+                        <div class="p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
                             <div class="table-container prose prose-sm max-w-none">
                                 <!-- Content injected by JS -->
                                 載入說明中...
@@ -560,7 +560,7 @@
 
         let shuffledPool = [];
         let poolIndex = 0;
-        let currentBatch = []; // Stores the currently displayed 7 items
+        let currentBatch = []; 
 
         // Fisher-Yates Shuffle
         function shuffle(array) {
@@ -578,7 +578,6 @@
             let indices = Array.from({length: poolItems.length}, (_, i) => i);
             shuffledPool = shuffle(indices);
             poolIndex = 0;
-            // Get initial batch
             getNextBatch();
         }
 
@@ -586,7 +585,7 @@
             let batchIndices = [];
             for (let i = 0; i < 7; i++) {
                 if (poolIndex >= shuffledPool.length) {
-                    // Reshuffle if exhausted
+                    // Reshuffle if exhausted to ensure new order
                     shuffledPool = shuffle(shuffledPool);
                     poolIndex = 0;
                 }
@@ -597,15 +596,13 @@
             return currentBatch;
         }
 
-        // Called by Dice Button
         function refreshOpportunities() {
-            // Animation effect on dice (optional visual feedback)
             const btn = document.querySelector('button[title="隨機換算"] i');
             btn.classList.add('animate-spin');
             setTimeout(() => btn.classList.remove('animate-spin'), 500);
 
-            getNextBatch(); // Updates currentBatch
-            // Recalculate will re-render slider with new batch
+            getNextBatch(); 
+            
             const totalImpact = parseFloat(document.getElementById('resultModal').getAttribute('data-total-impact')) || 0;
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
@@ -614,17 +611,15 @@
             else if (bonusType === '12') annualPackage = salary * 12;
             else annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
             
-            const personAnnualCost = annualPackage * 1.5; // Multiplier
+            const personAnnualCost = annualPackage * 1.5; 
 
             renderOpportunitySlider(totalImpact, personAnnualCost);
         }
 
-        // --- RENDER SLIDER (Updated to use currentBatch) ---
         function renderOpportunitySlider(totalImpact, personAnnualCost) {
             const container = document.getElementById('opportunitySlider');
             container.innerHTML = ''; 
 
-            // Use currentBatch (or init if empty)
             if (currentBatch.length === 0) initPool();
 
             currentBatch.forEach(item => {
@@ -640,7 +635,6 @@
                     val = totalImpact / price;
                 }
 
-                // Formatting
                 let displayVal = val < 10 ? val.toFixed(1) : Math.floor(val).toLocaleString();
                 if (val < 0.1 && val > 0) displayVal = "<0.1";
                 if (val === 0) displayVal = "0";
@@ -657,7 +651,6 @@
                 container.appendChild(card);
             });
 
-            // Always append Custom Card at the end
             const customCard = document.createElement('div');
             customCard.className = `flex-none min-w-[160px] bg-white rounded-lg p-2 text-center border-2 border-dashed border-slate-300 snap-center flex flex-col justify-center`;
             customCard.innerHTML = `
@@ -672,11 +665,10 @@
             `;
             container.appendChild(customCard);
             
-            // Re-init scroll logic
             initSliderScroll();
         }
 
-        // --- REST OF THE CODE (Markdown, Logic, Calculator, etc.) ---
+        // ... (Remaining Logic for Markdown, Calculation, Toggles etc. preserved) ...
         const defaultMarkdown = `
 # 設計債對工程開發效率之影響分析
 
@@ -801,14 +793,11 @@
                             numbersHTML += `<div class="slot-num">${i}</div>`;
                         }
                     }
-                    // Duplicated loops to ensure scrolling works visually
                     for (let set = 0; set < 3; set++) {
                         for (let i = 0; i <= 9; i++) {
                             numbersHTML += `<div class="slot-num">${i}</div>`;
                         }
                     }
-                    
-                    // Reset to original loop for correctness
                     numbersHTML = '';
                     for (let set = 0; set < 3; set++) {
                         for (let i = 0; i <= 9; i++) {
