@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V15</title>
+    <title>設計治理與合規風險試算 V17 (140項資料庫)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -54,7 +54,7 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* --- Markdown Table Styles (Equal Distribution) --- */
+        /* --- Markdown Table Styles --- */
         .prose { max-width: none; }
         .prose table { 
             width: 100%; 
@@ -82,12 +82,8 @@
         .prose code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #ef4444; font-size: 0.9em; }
 
         /* --- Interactive Hover Styles --- */
-        .interactive-element:hover {
-            border-color: #60a5fa; /* blue-400 */
-        }
-        input[type="number"]:hover, select:hover {
-            border-color: #60a5fa;
-        }
+        .interactive-element:hover { border-color: #60a5fa; }
+        input[type="number"]:hover, select:hover { border-color: #60a5fa; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -116,20 +112,17 @@
                         <input type="number" id="salary" value="70000" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-colors">
                     </div>
                     
-                    <!-- Modified Bonus Section -->
+                    <!-- Bonus Section -->
                     <div>
                         <label class="text-xs text-slate-500 font-bold uppercase block mb-2">年終／獎金</label>
                         <div class="space-y-2">
-                            <!-- Button Group: 14 Months & None -->
                             <div class="flex space-x-2">
-                                <!-- Option 1: 14 Months -->
                                 <label class="cursor-pointer block flex-1">
                                     <input type="radio" name="bonusType" value="14" id="bonusFixedRadio" class="peer sr-only" checked onchange="toggleBonusInput()">
                                     <div id="fixedBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
                                         固定 14 個月
                                     </div>
                                 </label>
-                                <!-- Option 2: None (12 Months) -->
                                 <label class="cursor-pointer block flex-1">
                                     <input type="radio" name="bonusType" value="12" id="bonusNoneRadio" class="peer sr-only" onchange="toggleBonusInput()">
                                     <div id="noneBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
@@ -138,19 +131,14 @@
                                 </label>
                             </div>
                             
-                            <!-- Option 3: Custom Input (Border Separator, 4:1 Ratio) -->
+                            <!-- Custom Input -->
                             <div class="flex items-center space-x-2">
                                 <div class="relative w-full">
-                                    <!-- Radio for Custom (Hidden) -->
                                     <input type="radio" name="bonusType" value="custom" id="bonusCustomRadio" class="peer sr-only" onchange="toggleBonusInput()">
-                                    
-                                    <!-- Input Wrapper (Handles Border & Focus) -->
                                     <div id="customBonusWrapper" class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden transition-all cursor-text hover:border-blue-400" onclick="selectCustomRadio()">
-                                        <!-- Input Field (80%) -->
                                         <input type="number" id="customBonus" placeholder="輸入自訂獎金總額" 
                                             class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-semibold text-slate-700 focus:outline-none placeholder-slate-400"
                                             onfocus="selectCustomRadio()">
-                                        <!-- Unit Label (20%) - Centered with Left Border -->
                                         <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
                                             元 (TWD)
                                         </div>
@@ -185,22 +173,16 @@
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <!-- Split Border Input -->
                             <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
                                 <input type="number" id="nDes" value="5" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
-                                    人
-                                </div>
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">人</div>
                             </div>
                         </div>
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <!-- Split Border Input -->
                             <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
                                 <input type="number" id="tDes" value="0.75" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
-                                    小時
-                                </div>
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">小時</div>
                             </div>
                         </div>
                     </div>
@@ -217,22 +199,16 @@
                     <div class="flex gap-3">
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <!-- Split Border Input -->
                             <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
                                 <input type="number" id="nDev" value="3" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
-                                    人
-                                </div>
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">人</div>
                             </div>
                         </div>
                         <div class="flex-1">
                             <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <!-- Split Border Input -->
                             <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
                                 <input type="number" id="tDev" value="0.5" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
-                                    小時
-                                </div>
+                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">小時</div>
                             </div>
                         </div>
                     </div>
@@ -348,7 +324,6 @@
             </div>
 
             <!-- SLOT MACHINE RESULT (Red + Negative) with "Pre-text" -->
-            <!-- Updated: Font size fixed to 40px as requested -->
             <div class="text-[40px] font-black text-red-600 mb-8 tracking-tight flex items-center justify-center flex-wrap" id="finalResultContainer">
                 -$0
             </div>
@@ -356,13 +331,22 @@
             <!-- Opportunity Cost Slider Section -->
             <div class="mb-6 relative group">
                 <div class="absolute inset-0 bg-blue-50 rounded-xl transform -rotate-1 opacity-50"></div>
-                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm overflow-hidden"> <!-- overflow hidden for gradient -->
+                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm overflow-hidden">
+                    
+                    <!-- Slider Header with Dice -->
                     <div class="flex justify-between items-center mb-3">
                         <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wide flex items-center">
                             <i class="fas fa-search-dollar mr-1.5"></i> 這筆錢原本可以拿來...
                         </h3>
-                        <div class="text-blue-300 text-xs flex items-center">
-                            滑動查看
+                        <div class="flex items-center">
+                            <!-- Dice Button -->
+                            <button onclick="refreshOpportunities()" class="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors mr-2 cursor-pointer group" title="隨機換算">
+                                <i class="fas fa-dice text-lg group-hover:scale-110 transition-transform"></i>
+                            </button>
+                            <!-- Vertical Divider -->
+                            <div class="h-4 w-px bg-slate-300 mr-2"></div>
+                            <!-- Slide Text -->
+                            <div class="text-blue-300 text-xs flex items-center">滑動查看</div>
                         </div>
                     </div>
                     
@@ -372,7 +356,7 @@
                         <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch" id="opportunitySlider">
                             <!-- Items will be injected by JS -->
                         </div>
-                        <!-- Fade Overlay on Right (Added ID and Transition) -->
+                        <!-- Fade Overlay on Right -->
                         <div id="sliderFadeOverlay" class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
                     </div>
                 </div>
@@ -393,7 +377,7 @@
                         </div>
                     </div>
                     
-                    <!-- Dynamic Markdown Content Container (UPDATED SCROLLING) -->
+                    <!-- Dynamic Markdown Content Container -->
                     <div id="efficiencyDetailsContent" class="hidden mt-3 border-t border-slate-200">
                         <div class="max-h-[300px] overflow-y-auto p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
                             <div class="table-container prose prose-sm max-w-none">
@@ -420,7 +404,279 @@
     </div>
 
     <script>
-        // --- UPDATED DEFAULT MARKDOWN CONTENT ---
+        // --- 140 OPPORTUNITY ITEMS POOL ---
+        // Categories: HR, Tech, Office, Life, Biz
+        const poolItems = [
+            // HR & Hiring (20)
+            { title: '增聘資深工程師', unit: '人', icon: 'fa-user-plus', color: 'blue', price: (b) => b * 1.1 },
+            { title: '增聘資深設計師', unit: '人', icon: 'fa-pen-nib', color: 'purple', price: (b) => b * 0.9 },
+            { title: '增聘專案經理 (PM)', unit: '人', icon: 'fa-tasks', color: 'indigo', price: (b) => b * 1.0 },
+            { title: '增聘 QA 工程師', unit: '人', icon: 'fa-bug', color: 'teal', price: (b) => b * 0.8 },
+            { title: '增聘實習生 (一年)', unit: '人', icon: 'fa-graduation-cap', color: 'green', price: 360000 },
+            { title: '高階獵頭服務費', unit: '人', icon: 'fa-user-tie', color: 'slate', price: 300000 },
+            { title: '新進人員簽約金', unit: '人', icon: 'fa-file-signature', color: 'yellow', price: 100000 },
+            { title: '留任獎金 (Retention)', unit: '人', icon: 'fa-hand-holding-usd', color: 'orange', price: 150000 },
+            { title: '年度調薪預算', unit: '人', icon: 'fa-chart-line', color: 'emerald', price: 60000 },
+            { title: '員工推薦獎金', unit: '人', icon: 'fa-users', color: 'cyan', price: 30000 },
+            { title: '外部技術顧問', unit: '月', icon: 'fa-chalkboard-teacher', color: 'violet', price: 100000 },
+            { title: '敏捷教練 (Agile Coach)', unit: '天', icon: 'fa-stopwatch', color: 'rose', price: 20000 },
+            { title: '資深架構師諮詢', unit: '小時', icon: 'fa-sitemap', color: 'slate', price: 8000 },
+            { title: 'UI/UX 專家審查', unit: '次', icon: 'fa-search', color: 'pink', price: 50000 },
+            { title: '使用者測試受訪者', unit: '人', icon: 'fa-comment-dots', color: 'lime', price: 2000 },
+            { title: '員工教育訓練補助', unit: '人', icon: 'fa-book-reader', color: 'blue', price: 20000 },
+            { title: '全體員工健檢', unit: '場', icon: 'fa-heartbeat', color: 'red', price: 150000 }, // Est 20 ppl
+            { title: '團體保險費', unit: '年', icon: 'fa-shield-alt', color: 'sky', price: 100000 },
+            { title: '部門季獎金', unit: '季', icon: 'fa-trophy', color: 'amber', price: 200000 },
+            { title: '資遣費 (風險預備)', unit: '人', icon: 'fa-door-open', color: 'gray', price: 100000 },
+
+            // Hardware & Tech (25)
+            { title: '頂規 MacBook Pro', unit: '台', icon: 'fa-laptop', color: 'gray', price: 80000 },
+            { title: 'MacBook Air', unit: '台', icon: 'fa-laptop', color: 'slate', price: 35000 },
+            { title: 'Dell XPS 開發機', unit: '台', icon: 'fa-laptop-code', color: 'zinc', price: 60000 },
+            { title: 'ThinkPad X1', unit: '台', icon: 'fa-laptop', color: 'neutral', price: 55000 },
+            { title: 'iMac 24吋', unit: '台', icon: 'fa-desktop', color: 'orange', price: 45000 },
+            { title: 'Mac Studio', unit: '台', icon: 'fa-microchip', color: 'stone', price: 70000 },
+            { title: 'Apple Pro Display XDR', unit: '台', icon: 'fa-tv', color: 'black', price: 160000 },
+            { title: '4K 專業螢幕', unit: '台', icon: 'fa-tv', color: 'blue', price: 15000 },
+            { title: '34吋 曲面螢幕', unit: '台', icon: 'fa-tv', color: 'indigo', price: 25000 },
+            { title: 'iPad Pro (測試機)', unit: '台', icon: 'fa-tablet-alt', color: 'purple', price: 30000 },
+            { title: 'iPhone 15 Pro (測試機)', unit: '台', icon: 'fa-mobile-alt', color: 'green', price: 40000 },
+            { title: 'Android 旗艦機 (測試)', unit: '台', icon: 'fa-robot', color: 'lime', price: 30000 },
+            { title: 'HHKB 機械鍵盤', unit: '把', icon: 'fa-keyboard', color: 'slate', price: 10000 },
+            { title: 'Logitech MX Master', unit: '顆', icon: 'fa-mouse', color: 'gray', price: 4000 },
+            { title: '降噪耳機 (Sony/Bose)', unit: '副', icon: 'fa-headphones', color: 'sky', price: 10000 },
+            { title: '人體工學滑鼠', unit: '顆', icon: 'fa-mouse', color: 'teal', price: 3000 },
+            { title: 'Wacom 繪圖板', unit: '塊', icon: 'fa-pencil-alt', color: 'pink', price: 12000 },
+            { title: 'NAS 儲存設備', unit: '台', icon: 'fa-hdd', color: 'amber', price: 20000 },
+            { title: 'GPU 算力租賃 (A100)', unit: '月', icon: 'fa-memory', color: 'green', price: 40000 },
+            { title: 'VR 頭盔 (Vision Pro)', unit: '台', icon: 'fa-vr-cardboard', color: 'fuchsia', price: 120000 },
+            { title: '測試用伺服器', unit: '台', icon: 'fa-server', color: 'blue', price: 50000 },
+            { title: '機房冷氣電費', unit: '月', icon: 'fa-snowflake', color: 'cyan', price: 15000 },
+            { title: 'Raspberry Pi 叢集', unit: '組', icon: 'fa-microchip', color: 'red', price: 10000 },
+            { title: '3D 印表機', unit: '台', icon: 'fa-print', color: 'orange', price: 25000 },
+            { title: '會議室視訊設備', unit: '組', icon: 'fa-video', color: 'slate', price: 80000 },
+
+            // SaaS & Software (25)
+            { title: 'Figma 企業年費', unit: '年', icon: 'fa-file-invoice-dollar', color: 'purple', price: 150000 },
+            { title: 'Adobe CC 全套', unit: '年', icon: 'fa-palette', color: 'red', price: 30000 },
+            { title: 'Github Copilot 團隊', unit: '年', icon: 'fa-robot', color: 'slate', price: 60000 },
+            { title: 'ChatGPT Plus (全員)', unit: '年', icon: 'fa-comment-alt', color: 'green', price: 80000 },
+            { title: 'AWS 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'orange', price: 30000 },
+            { title: 'GCP 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'blue', price: 30000 },
+            { title: 'Azure 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'sky', price: 30000 },
+            { title: 'Vercel Pro 訂閱', unit: '年', icon: 'fa-server', color: 'black', price: 20000 },
+            { title: 'Slack Business', unit: '年', icon: 'fa-comments', color: 'fuchsia', price: 50000 },
+            { title: 'Zoom Pro 帳號', unit: '年', icon: 'fa-video', color: 'blue', price: 15000 },
+            { title: 'Notion Team Plan', unit: '年', icon: 'fa-book', color: 'stone', price: 30000 },
+            { title: 'Jira/Confluence', unit: '年', icon: 'fa-tasks', color: 'blue', price: 40000 },
+            { title: 'Linear 專案管理', unit: '年', icon: 'fa-list-check', color: 'indigo', price: 30000 },
+            { title: 'Asana 進階版', unit: '年', icon: 'fa-check-circle', color: 'rose', price: 35000 },
+            { title: 'Miro 協作白板', unit: '年', icon: 'fa-border-all', color: 'yellow', price: 25000 },
+            { title: 'Typeform 進階版', unit: '年', icon: 'fa-wpforms', color: 'teal', price: 15000 },
+            { title: 'Webflow 網站託管', unit: '年', icon: 'fa-globe', color: 'blue', price: 12000 },
+            { title: 'Google Workspace', unit: '年', icon: 'fa-envelope', color: 'red', price: 80000 },
+            { title: 'Microsoft 365', unit: '年', icon: 'fa-file-word', color: 'blue', price: 80000 },
+            { title: '1Password 企業版', unit: '年', icon: 'fa-key', color: 'slate', price: 20000 },
+            { title: 'Sentry 錯誤監控', unit: '年', icon: 'fa-bug', color: 'violet', price: 10000 },
+            { title: 'Datadog 監控', unit: '月', icon: 'fa-chart-area', color: 'purple', price: 15000 },
+            { title: 'Intercom 客服系統', unit: '月', icon: 'fa-headset', color: 'blue', price: 10000 },
+            { title: 'Zendesk 客服系統', unit: '月', icon: 'fa-ticket-alt', color: 'green', price: 8000 },
+            { title: 'Salesforce 授權', unit: '人/年', icon: 'fa-cloud', color: 'sky', price: 50000 },
+
+            // Office & Admin (25)
+            { title: 'Herman Miller 椅', unit: '張', icon: 'fa-chair', color: 'black', price: 45000 },
+            { title: '升降桌 (電動)', unit: '張', icon: 'fa-arrows-alt-v', color: 'stone', price: 15000 },
+            { title: '信義區辦公室租金', unit: '坪/月', icon: 'fa-building', color: 'slate', price: 3500 },
+            { title: '內湖商辦租金', unit: '坪/月', icon: 'fa-building', color: 'zinc', price: 1800 },
+            { title: '共享辦公室席位', unit: '人/月', icon: 'fa-chair', color: 'orange', price: 8000 },
+            { title: '辦公室清潔費', unit: '月', icon: 'fa-broom', color: 'teal', price: 12000 },
+            { title: '辦公室電費', unit: '月', icon: 'fa-bolt', color: 'yellow', price: 20000 },
+            { title: '商業光纖網路', unit: '月', icon: 'fa-wifi', color: 'blue', price: 3000 },
+            { title: 'Nespresso 膠囊', unit: '年', icon: 'fa-coffee', color: 'amber', price: 20000 },
+            { title: '星巴克咖啡豆', unit: '年', icon: 'fa-mug-hot', color: 'green', price: 15000 },
+            { title: '辦公室零食櫃', unit: '月', icon: 'fa-cookie-bite', color: 'orange', price: 10000 },
+            { title: '啤酒/飲料庫存', unit: '月', icon: 'fa-beer', color: 'yellow', price: 8000 },
+            { title: 'Dyson 吸塵器', unit: '台', icon: 'fa-quidditch', color: 'purple', price: 20000 },
+            { title: 'Dyson 空氣清淨機', unit: '台', icon: 'fa-wind', color: 'slate', price: 25000 },
+            { title: '免治馬桶座', unit: '個', icon: 'fa-toilet', color: 'white', price: 15000 },
+            { title: '加大白板牆', unit: '面', icon: 'fa-chalkboard', color: 'slate', price: 10000 },
+            { title: '投影機 (高流明)', unit: '台', icon: 'fa-video', color: 'gray', price: 30000 },
+            { title: '碎紙機 (商用)', unit: '台', icon: 'fa-trash', color: 'black', price: 5000 },
+            { title: '飲水機保養費', unit: '年', icon: 'fa-tint', color: 'blue', price: 6000 },
+            { title: '辦公室盆栽租賃', unit: '月', icon: 'fa-seedling', color: 'green', price: 3000 },
+            { title: '雜誌訂閱 (設計)', unit: '年', icon: 'fa-book-open', color: 'pink', price: 5000 },
+            { title: '計程車費報帳', unit: '月', icon: 'fa-taxi', color: 'yellow', price: 10000 },
+            { title: '快遞物流費', unit: '月', icon: 'fa-truck', color: 'slate', price: 5000 },
+            { title: '文具用品採購', unit: '季', icon: 'fa-pencil-ruler', color: 'indigo', price: 8000 },
+            { title: '印表機租賃', unit: '月', icon: 'fa-print', color: 'gray', price: 3000 },
+
+            // Lifestyle, Marketing & Misc (45)
+            { title: '米其林部門聚餐', unit: '場', icon: 'fa-utensils', color: 'red', price: 60000 },
+            { title: '每週五下午茶', unit: '年', icon: 'fa-pizza-slice', color: 'orange', price: 100000 },
+            { title: '沖繩員工旅遊', unit: '人', icon: 'fa-umbrella-beach', color: 'cyan', price: 30000 },
+            { title: '北海道滑雪團', unit: '人', icon: 'fa-snowflake', color: 'blue', price: 50000 },
+            { title: '國內豪華露營', unit: '人', icon: 'fa-campground', color: 'green', price: 10000 },
+            { title: '五星級飯店住宿', unit: '晚', icon: 'fa-bed', color: 'slate', price: 12000 },
+            { title: 'Tesla Model 3', unit: '輛', icon: 'fa-car', color: 'red', price: 1750000 },
+            { title: 'Gogoro 機車', unit: '台', icon: 'fa-motorcycle', color: 'gray', price: 80000 },
+            { title: '商務艙機票 (美西)', unit: '張', icon: 'fa-plane', color: 'blue', price: 120000 },
+            { title: '高鐵商務艙 (年)', unit: '人', icon: 'fa-subway', color: 'orange', price: 50000 },
+            { title: '健身房補助', unit: '人/年', icon: 'fa-dumbbell', color: 'slate', price: 12000 },
+            { title: '按摩服務 (到府)', unit: '次', icon: 'fa-spa', color: 'pink', price: 2000 },
+            { title: 'Netflix 訂閱 (年)', unit: '份', icon: 'fa-film', color: 'red', price: 3500 },
+            { title: 'Spotify 訂閱 (年)', unit: '份', icon: 'fa-music', color: 'green', price: 2000 },
+            { title: 'PS5 遊戲主機', unit: '台', icon: 'fa-gamepad', color: 'blue', price: 18000 },
+            { title: 'Switch 主機', unit: '台', icon: 'fa-gamepad', color: 'red', price: 10000 },
+            { title: 'Steam 遊戲購物金', unit: '份', icon: 'fa-gamepad', color: 'black', price: 5000 },
+            { title: '奈良美智版畫', unit: '幅', icon: 'fa-palette', color: 'yellow', price: 200000 },
+            { title: 'BE@RBRICK 公仔', unit: '隻', icon: 'fa-robot', color: 'white', price: 20000 },
+            { title: '勞力士手錶', unit: '支', icon: 'fa-clock', color: 'emerald', price: 350000 },
+            { title: '愛馬仕柏金包', unit: '個', icon: 'fa-shopping-bag', color: 'orange', price: 400000 },
+            { title: 'FB/IG 廣告投放', unit: '天', icon: 'fa-ad', color: 'blue', price: 5000 },
+            { title: 'Google 關鍵字廣告', unit: '天', icon: 'fa-search', color: 'green', price: 5000 },
+            { title: 'KOL 業配合作', unit: '次', icon: 'fa-bullhorn', color: 'pink', price: 50000 },
+            { title: '新聞稿發布', unit: '篇', icon: 'fa-newspaper', color: 'slate', price: 30000 },
+            { title: '展覽攤位租金', unit: '場', icon: 'fa-store', color: 'indigo', price: 100000 },
+            { title: '活動場地租借', unit: '天', icon: 'fa-building', color: 'gray', price: 20000 },
+            { title: '專業攝影師', unit: '天', icon: 'fa-camera', color: 'black', price: 15000 },
+            { title: '形象影片製作', unit: '支', icon: 'fa-video', color: 'red', price: 150000 },
+            { title: 'Logo 設計費', unit: '式', icon: 'fa-drafting-compass', color: 'purple', price: 50000 },
+            { title: '律師諮詢費', unit: '小時', icon: 'fa-gavel', color: 'slate', price: 6000 },
+            { title: '商標註冊費', unit: '件', icon: 'fa-registered', color: 'blue', price: 10000 },
+            { title: '會計師簽證費', unit: '年', icon: 'fa-file-contract', color: 'green', price: 50000 },
+            { title: '專利申請費', unit: '件', icon: 'fa-certificate', color: 'yellow', price: 60000 },
+            { title: 'GDPR 合規顧問', unit: '次', icon: 'fa-shield-alt', color: 'blue', price: 100000 },
+            { title: 'ISO 認證輔導', unit: '案', icon: 'fa-stamp', color: 'slate', price: 200000 },
+            { title: '資安滲透測試', unit: '次', icon: 'fa-user-secret', color: 'black', price: 150000 },
+            { title: '伺服器壓力測試', unit: '次', icon: 'fa-tachometer-alt', color: 'red', price: 50000 },
+            { title: '使用者訪談費', unit: '場', icon: 'fa-comments', color: 'teal', price: 3000 },
+            { title: '市場調查報告', unit: '份', icon: 'fa-chart-pie', color: 'indigo', price: 50000 },
+            { title: '競品分析報告', unit: '份', icon: 'fa-search-dollar', color: 'green', price: 30000 },
+            { title: '技術大會門票', unit: '張', icon: 'fa-ticket-alt', color: 'purple', price: 8000 },
+            { title: '線上課程訂閱', unit: '年', icon: 'fa-laptop-code', color: 'blue', price: 5000 },
+            { title: '技術書籍採購', unit: '批', icon: 'fa-book', color: 'orange', price: 10000 },
+            { title: '網域續費 (10年)', unit: '個', icon: 'fa-globe', color: 'slate', price: 5000 }
+        ];
+
+        let shuffledPool = [];
+        let poolIndex = 0;
+        let currentBatch = []; // Stores the currently displayed 7 items
+
+        // Fisher-Yates Shuffle
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex != 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function initPool() {
+            // Create array of indices 0 to poolItems.length - 1
+            let indices = Array.from({length: poolItems.length}, (_, i) => i);
+            shuffledPool = shuffle(indices);
+            poolIndex = 0;
+            // Get initial batch
+            getNextBatch();
+        }
+
+        function getNextBatch() {
+            let batchIndices = [];
+            for (let i = 0; i < 7; i++) {
+                if (poolIndex >= shuffledPool.length) {
+                    // Reshuffle if exhausted
+                    shuffledPool = shuffle(shuffledPool);
+                    poolIndex = 0;
+                }
+                batchIndices.push(shuffledPool[poolIndex]);
+                poolIndex++;
+            }
+            currentBatch = batchIndices.map(idx => poolItems[idx]);
+            return currentBatch;
+        }
+
+        // Called by Dice Button
+        function refreshOpportunities() {
+            // Animation effect on dice (optional visual feedback)
+            const btn = document.querySelector('button[title="隨機換算"] i');
+            btn.classList.add('animate-spin');
+            setTimeout(() => btn.classList.remove('animate-spin'), 500);
+
+            getNextBatch(); // Updates currentBatch
+            // Recalculate will re-render slider with new batch
+            const totalImpact = parseFloat(document.getElementById('resultModal').getAttribute('data-total-impact')) || 0;
+            const salary = parseFloat(document.getElementById('salary').value) || 0;
+            const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
+            let annualPackage = 0;
+            if (bonusType === '14') annualPackage = salary * 14;
+            else if (bonusType === '12') annualPackage = salary * 12;
+            else annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
+            
+            const personAnnualCost = annualPackage * 1.5; // Multiplier
+
+            renderOpportunitySlider(totalImpact, personAnnualCost);
+        }
+
+        // --- RENDER SLIDER (Updated to use currentBatch) ---
+        function renderOpportunitySlider(totalImpact, personAnnualCost) {
+            const container = document.getElementById('opportunitySlider');
+            container.innerHTML = ''; 
+
+            // Use currentBatch (or init if empty)
+            if (currentBatch.length === 0) initPool();
+
+            currentBatch.forEach(item => {
+                let price = 0;
+                if (typeof item.price === 'function') {
+                    price = item.price(personAnnualCost);
+                } else {
+                    price = item.price;
+                }
+
+                let val = 0;
+                if (price > 0) {
+                    val = totalImpact / price;
+                }
+
+                // Formatting
+                let displayVal = val < 10 ? val.toFixed(1) : Math.floor(val).toLocaleString();
+                if (val < 0.1 && val > 0) displayVal = "<0.1";
+                if (val === 0) displayVal = "0";
+
+                const card = document.createElement('div');
+                card.className = `flex-none min-w-[140px] bg-${item.color}-50 rounded-lg p-3 text-center border border-${item.color}-100 snap-center flex flex-col justify-center`;
+                card.innerHTML = `
+                    <i class="fas ${item.icon} text-${item.color}-500 text-lg mb-1"></i>
+                    <div class="text-[10px] text-slate-500 font-medium mb-0.5 whitespace-normal leading-tight h-8 flex items-center justify-center">${item.title}</div>
+                    <div class="text-sm font-bold text-${item.color}-700">
+                        ${displayVal} <span class="text-xs font-normal">${item.unit}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+
+            // Always append Custom Card at the end
+            const customCard = document.createElement('div');
+            customCard.className = `flex-none min-w-[160px] bg-white rounded-lg p-2 text-center border-2 border-dashed border-slate-300 snap-center flex flex-col justify-center`;
+            customCard.innerHTML = `
+                <div class="text-[10px] text-slate-400 font-bold mb-2 uppercase">自訂換算</div>
+                <div class="space-y-1 mb-2">
+                    <input type="text" id="customName" placeholder="項目 (例: 伺服器)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400">
+                    <input type="number" id="customPrice" placeholder="單價 (例: 50000)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400" oninput="calcCustomCard()">
+                </div>
+                <div class="text-sm font-bold text-slate-700 bg-slate-100 rounded py-1">
+                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-xs font-normal"></span>
+                </div>
+            `;
+            container.appendChild(customCard);
+            
+            // Re-init scroll logic
+            initSliderScroll();
+        }
+
+        // --- REST OF THE CODE (Markdown, Logic, Calculator, etc.) ---
         const defaultMarkdown = `
 # 設計債對工程開發效率之影響分析
 
@@ -434,19 +690,15 @@
 | **4. 維護與擴充困難**<br>*(Scalability Issues)* | • 1-1 無 Token 化<br>• 3-2 Wording 不統一 | **系統變得「脆弱 (Fragile)」且難以修改**<br>任何全域修改都像在拆彈。 | • **全域修改恐懼**：改品牌色需手動替換幾千個色碼，極易改錯造成事故。<br>• **硬編碼詛咒**：文案無 Pattern 導致 Hard-code，修改文案需動 Code 並重新部署 (Deploy)。 | **維運成本 & 機會成本**<br>團隊被舊代碼綁架，無法快速響應市場新需求。 |
 `;
 
-        // --- LOAD MARKDOWN ---
         async function loadMarkdown() {
             const container = document.querySelector('#efficiencyDetailsContent .table-container');
             try {
-                // Try fetch
                 const response = await fetch('efficiency_loss.md');
                 if (response.ok) {
                     const text = await response.text();
                     container.innerHTML = marked.parse(text);
                 } else {
-                    // Fallback to internal const
                     container.innerHTML = marked.parse(defaultMarkdown);
-                    console.log("Using default markdown due to fetch failure");
                 }
             } catch (e) {
                 container.innerHTML = marked.parse(defaultMarkdown);
@@ -459,16 +711,13 @@
             if (content.classList.contains('hidden')) {
                 content.classList.remove('hidden');
                 icon.classList.add('rotate-180');
-                if(content.innerText.includes("載入說明中")) {
-                    loadMarkdown();
-                }
+                if(content.innerText.includes("載入說明中")) loadMarkdown();
             } else {
                 content.classList.add('hidden');
                 icon.classList.remove('rotate-180');
             }
         }
 
-        // --- NEW FUNCTION: SELECT CUSTOM RADIO ON INPUT FOCUS ---
         function selectCustomRadio() {
             const radio = document.getElementById('bonusCustomRadio');
             if (!radio.checked) {
@@ -477,7 +726,6 @@
             }
         }
 
-        // --- TOGGLE BONUS INPUT VISUALS ---
         function toggleBonusInput() {
             const customRadio = document.getElementById('bonusCustomRadio');
             const customBonusWrapper = document.getElementById('customBonusWrapper');
@@ -485,38 +733,25 @@
             const noneBtn = document.getElementById('noneBonusBtn');
             const hint = document.getElementById('bonusHint');
             
-            // Custom Input Active State
             if (customRadio.checked) {
-                // Activate Wrapper (Active Blue Border)
                 customBonusWrapper.classList.remove('bg-slate-50', 'border-slate-300');
                 customBonusWrapper.classList.add('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
-                
-                // Deactivate Buttons (Gray out)
                 fixedBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300'); 
                 fixedBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
-                
                 noneBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300');
                 noneBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
-
                 hint.innerText = "已啟用自訂獎金，將攤提至每月成本。";
             } else {
-                // Button Selected (14 or None)
-                // Deactivate Wrapper
                 customBonusWrapper.classList.add('bg-slate-50', 'border-slate-300');
                 customBonusWrapper.classList.remove('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
-                
-                // Reset Button Styles to Default (Let CSS peer-checked take over for the selected one)
                 fixedBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
                 fixedBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
-                
                 noneBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
                 noneBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
-                
                 hint.innerText = "系統會將獎金自動攤提至每月月薪成本中。";
             }
         }
 
-        // --- LOGIC TOGGLES ---
         function toggleLogic() {
             const content = document.getElementById('logicContent');
             const icon = document.getElementById('logicIcon');
@@ -543,10 +778,7 @@
             }
         }
 
-        // --- SLOT MACHINE ANIMATION ENGINE ---
         function runSlotMachineAnimation(container, finalValue) {
-            // Update: Added extra space for visual separation and ensured minus is attached to number
-            // "預估損失  -" (Double space to ensure gap visibility in HTML rendering)
             const formattedString = "預估損失  -" + new Intl.NumberFormat('zh-TW', { 
                 style: 'currency', 
                 currency: 'TWD', 
@@ -557,8 +789,6 @@
             container.classList.add('slot-machine-wrapper');
 
             const chars = formattedString.split('');
-            let digitIndex = 0;
-
             chars.forEach((char, index) => {
                 if (/\d/.test(char)) {
                     const windowDiv = document.createElement('div');
@@ -566,18 +796,33 @@
                     const strip = document.createElement('div');
                     strip.className = 'slot-strip';
                     let numbersHTML = '';
+                    for (let set = 3; set > 0; set--) { // Simplified loop
+                       for (let i = 0; i <= 9; i++) {
+                            numbersHTML += `<div class="slot-num">${i}</div>`;
+                        }
+                    }
+                    // Duplicated loops to ensure scrolling works visually
                     for (let set = 0; set < 3; set++) {
                         for (let i = 0; i <= 9; i++) {
                             numbersHTML += `<div class="slot-num">${i}</div>`;
                         }
                     }
+                    
+                    // Reset to original loop for correctness
+                    numbersHTML = '';
+                    for (let set = 0; set < 3; set++) {
+                        for (let i = 0; i <= 9; i++) {
+                            numbersHTML += `<div class="slot-num">${i}</div>`;
+                        }
+                    }
+
                     strip.innerHTML = numbersHTML;
                     windowDiv.appendChild(strip);
                     container.appendChild(windowDiv);
 
                     const targetVal = parseInt(char);
                     const targetIndex = 20 + targetVal; 
-                    const delay = digitIndex * 150; 
+                    const delay = index * 100; 
                     const duration = 1500;
                     
                     void strip.offsetWidth;
@@ -587,12 +832,9 @@
                         strip.style.transitionDelay = `${delay}ms`;
                         strip.style.transform = `translateY(-${targetIndex}em)`;
                     }, 50);
-
-                    digitIndex++;
                 } else {
                     const span = document.createElement('span');
                     span.textContent = char;
-                    // Preserve space width
                     if (char === ' ') {
                         span.style.width = '0.25em'; 
                         span.style.display = 'inline-block';
@@ -602,7 +844,6 @@
             });
         }
 
-        // --- CUSTOM CARD CALCULATION ---
         function calcCustomCard() {
             const nameInput = document.getElementById('customName');
             const priceInput = document.getElementById('customPrice');
@@ -611,7 +852,6 @@
             
             const totalImpact = parseFloat(document.getElementById('resultModal').getAttribute('data-total-impact')) || 0;
             const price = parseFloat(priceInput.value);
-            const name = nameInput.value || '自訂項目';
 
             if (price > 0 && totalImpact > 0) {
                 const count = Math.floor(totalImpact / price);
@@ -622,91 +862,17 @@
             }
         }
 
-        // --- RENDER OPPORTUNITY SLIDER ---
-        function renderOpportunitySlider(totalImpact, personAnnualCost) {
-            const container = document.getElementById('opportunitySlider');
-            container.innerHTML = ''; 
-
-            const items = [
-                {
-                    icon: 'fa-user-plus', color: 'blue', title: '增聘資深戰力', unit: '人',
-                    val: (totalImpact / (personAnnualCost * 1.1)).toFixed(1)
-                },
-                {
-                    icon: 'fa-laptop', color: 'gray', title: '頂規 MacBook Pro', unit: '台',
-                    val: Math.floor(totalImpact / 80000).toLocaleString()
-                },
-                {
-                    icon: 'fa-chair', color: 'teal', title: 'Herman Miller 椅', unit: '張',
-                    val: Math.floor(totalImpact / 40000).toLocaleString()
-                },
-                {
-                    icon: 'fa-utensils', color: 'orange', title: '米其林部門聚餐', unit: '場',
-                    val: Math.floor(totalImpact / (5000 * 10)).toLocaleString() 
-                },
-                {
-                    icon: 'fa-file-invoice-dollar', color: 'purple', title: 'Figma 企業版年費', unit: '年',
-                    val: (totalImpact / (10 * 75 * 12 * 32)).toFixed(1)
-                },
-                {
-                    icon: 'fa-car', color: 'red', title: 'Tesla Model 3', unit: '輛',
-                    val: (totalImpact / 1700000).toFixed(1)
-                },
-                {
-                    icon: 'fa-palette', color: 'pink', title: '奈良美智(Yoshitomo)版畫', unit: '幅',
-                    val: Math.floor(totalImpact / 150000).toLocaleString()
-                }
-            ];
-
-            items.forEach(item => {
-                const card = document.createElement('div');
-                card.className = `flex-none min-w-[140px] bg-${item.color}-50 rounded-lg p-3 text-center border border-${item.color}-100 snap-center flex flex-col justify-center`;
-                card.innerHTML = `
-                    <i class="fas ${item.icon} text-${item.color}-500 text-lg mb-1"></i>
-                    <div class="text-[10px] text-slate-500 font-medium mb-0.5 whitespace-normal leading-tight h-8 flex items-center justify-center">${item.title}</div>
-                    <div class="text-sm font-bold text-${item.color}-700">
-                        ${item.val} <span class="text-xs font-normal">${item.unit}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-
-            // Custom Card
-            const customCard = document.createElement('div');
-            customCard.className = `flex-none min-w-[160px] bg-white rounded-lg p-2 text-center border-2 border-dashed border-slate-300 snap-center flex flex-col justify-center`;
-            customCard.innerHTML = `
-                <div class="text-[10px] text-slate-400 font-bold mb-2 uppercase">自訂換算</div>
-                <div class="space-y-1 mb-2">
-                    <input type="text" id="customName" placeholder="項目 (例: 伺服器)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400">
-                    <input type="number" id="customPrice" placeholder="單價 (例: 50000)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400" oninput="calcCustomCard()">
-                </div>
-                <div class="text-sm font-bold text-slate-700 bg-slate-100 rounded py-1">
-                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-xs font-normal"></span>
-                </div>
-            `;
-            container.appendChild(customCard);
-        }
-
-        // --- NEW FUNCTION: SLIDER SCROLL LOGIC ---
         function initSliderScroll() {
             const slider = document.getElementById('opportunitySlider');
             const overlay = document.getElementById('sliderFadeOverlay');
-            
-            // Reset state
             overlay.classList.remove('opacity-0');
-            
             slider.onscroll = () => {
-                // Buffer of 5px
                 const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5;
-                if (isEnd) {
-                    overlay.classList.add('opacity-0');
-                } else {
-                    overlay.classList.remove('opacity-0');
-                }
+                if (isEnd) overlay.classList.add('opacity-0');
+                else overlay.classList.remove('opacity-0');
             };
         }
 
-        // --- MAIN CALCULATE ---
         function calculate() {
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const nDes = parseFloat(document.getElementById('nDes').value) || 0;
@@ -715,19 +881,12 @@
             const tDev = parseFloat(document.getElementById('tDev').value) || 0;
             const riskValue = parseFloat(document.getElementById('riskRegion').value) || 0;
 
-            // Handle Bonus Logic
             const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
             let annualSalaryPackage = 0;
 
-            if (bonusType === '14') {
-                annualSalaryPackage = salary * 14;
-            } else if (bonusType === '12') {
-                // "None" option -> 12 months only
-                annualSalaryPackage = salary * 12;
-            } else {
-                const customBonus = parseFloat(document.getElementById('customBonus').value) || 0;
-                annualSalaryPackage = (salary * 12) + customBonus;
-            }
+            if (bonusType === '14') annualSalaryPackage = salary * 14;
+            else if (bonusType === '12') annualSalaryPackage = salary * 12;
+            else annualSalaryPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
 
             const multiplier = 1.5; 
             const workDays = 250;
@@ -752,6 +911,7 @@
 
             document.getElementById('efficiencyResult').innerText = formatCurrency(efficiencyLoss);
 
+            // Initial render with first batch
             renderOpportunitySlider(totalImpact, personAnnualCost);
 
             const riskEl = document.getElementById('riskBreakdown');
@@ -779,7 +939,6 @@
             modalContent.classList.remove('scale-95');
             modalContent.classList.add('scale-100');
             
-            // Initialize Slider Scroll Logic
             initSliderScroll();
         }
 
@@ -801,6 +960,9 @@
                 maximumFractionDigits: 0 
             }).format(num);
         }
+
+        // Init Pool on load
+        window.onload = initPool;
     </script>
 </body>
 </html>
