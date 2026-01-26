@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V36 (Sky Blue Theme)</title>
+    <title>設計治理與合規風險試算 V35.2 (Card Size Fixed)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -18,12 +18,7 @@
                     fontFamily: { sans: ['Inter', 'sans-serif'] },
                     colors: { 
                         slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' },
-                        // Ensuring sky colors are available (default in v3, but explicit here for clarity)
-                        sky: {
-                            400: '#38bdf8',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                        }
+                        sky: { 400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7' }
                     },
                     animation: { 
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
@@ -45,7 +40,7 @@
             background-color: #020617; 
             color: #e2e8f0;
             background-image: 
-                radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 50%), /* sky-400 alpha */
+                radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 50%),
                 radial-gradient(circle at 0% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
             overflow-x: hidden;
         }
@@ -74,10 +69,10 @@
         .prose strong { color: #f1f5f9; font-weight: 600; }
         .prose code { background-color: #1e293b; padding: 2px 6px; border-radius: 4px; color: #38bdf8; font-size: 0.9em; border: 1px solid #334155; }
         
-        /* Interactive Inputs (Updated to Sky Blue) */
+        /* Interactive Inputs */
         .input-standard { transition: all 0.2s ease; border-color: #334155; }
-        .input-standard:hover { border-color: #38bdf8; /* sky-400 */ }
-        .input-standard:focus { border-color: #0ea5e9; /* sky-500 */ box-shadow: 0 0 0 1px #0ea5e9; outline: none; }
+        .input-standard:hover { border-color: #38bdf8; }
+        .input-standard:focus { border-color: #0ea5e9; box-shadow: 0 0 0 1px #0ea5e9; outline: none; }
         
         .input-wrapper-custom { transition: all 0.2s ease; }
         .input-wrapper-custom:hover { border-color: #38bdf8 !important; }
@@ -85,12 +80,6 @@
         .interactive-element { transition: all 0.2s ease; }
         .interactive-element:hover { border-color: #38bdf8; color: white; }
         
-        /* Input Focus Glow (Updated to Sky Blue) */
-        .input-glow:focus-within {
-            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); /* sky-400 alpha */
-            border-color: #38bdf8;
-        }
-
         input[type=number] { padding-right: 3rem; } 
         .cursor-grab { cursor: grab; }
         .cursor-grabbing { cursor: grabbing; }
@@ -104,7 +93,6 @@
         
         <!-- App Header -->
         <div class="p-6 text-center flex-shrink-0 relative overflow-hidden border-b border-slate-800 bg-slate-900/80">
-            
             <h1 class="text-2xl font-bold mb-1 tracking-tight text-white mt-2">設計治理與風險試算</h1>
             <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">Efficiency Loss + Compliance Risk</p>
         </div>
@@ -115,7 +103,6 @@
             <!-- Section 1: Basic Cost -->
             <div class="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-sm hover:border-slate-700 transition-colors">
                 <div class="flex items-center text-white font-bold border-b border-slate-800 pb-3 mb-4">
-                    <!-- Updated Icon BG to Sky -->
                     <div class="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center mr-3"><i class="fas fa-coins text-sky-400"></i></div><span>基礎人力成本</span>
                 </div>
                 <div class="space-y-4">
@@ -216,7 +203,6 @@
 
         <!-- Footer -->
         <div class="p-5 border-t border-slate-800 bg-slate-900/90 backdrop-blur z-10 flex-shrink-0">
-            <!-- Updated Button Gradient -->
             <button onclick="calculate()" class="group w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-sky-900/30 transition-all flex items-center justify-center border border-white/10 active:scale-95"><span class="text-lg tracking-wide">計算總體營運衝擊</span><div class="ml-3 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors"><i class="fas fa-arrow-right text-sm group-hover:translate-x-0.5 transition-transform"></i></div></button>
         </div>
     </div>
@@ -401,29 +387,8 @@
                 let displayVal = val < 10 ? val.toFixed(1) : Math.floor(val).toLocaleString();
                 if (val < 0.1 && val > 0) displayVal = "<0.1"; if (val === 0) displayVal = "0";
 
-                // Updated colorMap to use SKY for blue cases
                 const colorMap = {
-                    blue: 'bg-sky-500/10 text-sky-400 border-sky-500/20', 
-                    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20', 
-                    indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', 
-                    sky: 'bg-sky-500/10 text-sky-400 border-sky-500/20', 
-                    teal: 'bg-teal-500/10 text-teal-400 border-teal-500/20', 
-                    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 
-                    green: 'bg-green-500/10 text-green-400 border-green-500/20', 
-                    lime: 'bg-lime-500/10 text-lime-400 border-lime-500/20', 
-                    yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', 
-                    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20', 
-                    orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20', 
-                    red: 'bg-red-500/10 text-red-400 border-red-500/20', 
-                    rose: 'bg-rose-500/10 text-rose-400 border-rose-500/20', 
-                    pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20', 
-                    fuchsia: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20', 
-                    violet: 'bg-violet-500/10 text-violet-400 border-violet-500/20', 
-                    slate: 'bg-slate-700/30 text-slate-300 border-slate-600/30', 
-                    gray: 'bg-gray-700/30 text-gray-300 border-gray-600/30', 
-                    zinc: 'bg-zinc-700/30 text-zinc-300 border-zinc-600/30', 
-                    neutral: 'bg-neutral-700/30 text-neutral-300 border-neutral-600/30', 
-                    stone: 'bg-stone-700/30 text-stone-300 border-stone-600/30'
+                    blue: 'bg-sky-500/10 text-sky-400 border-sky-500/20', purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20', indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', sky: 'bg-sky-500/10 text-sky-400 border-sky-500/20', teal: 'bg-teal-500/10 text-teal-400 border-teal-500/20', emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', green: 'bg-green-500/10 text-green-400 border-green-500/20', lime: 'bg-lime-500/10 text-lime-400 border-lime-500/20', yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20', orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20', red: 'bg-red-500/10 text-red-400 border-red-500/20', rose: 'bg-rose-500/10 text-rose-400 border-rose-500/20', pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20', fuchsia: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20', violet: 'bg-violet-500/10 text-violet-400 border-violet-500/20', slate: 'bg-slate-700/30 text-slate-300 border-slate-600/30', gray: 'bg-gray-700/30 text-gray-300 border-gray-600/30', zinc: 'bg-zinc-700/30 text-zinc-300 border-zinc-600/30', neutral: 'bg-neutral-700/30 text-neutral-300 border-neutral-600/30', stone: 'bg-stone-700/30 text-stone-300 border-stone-600/30'
                 };
                 const styleClass = colorMap[item.color] || colorMap['slate'];
 
@@ -433,7 +398,8 @@
                     animClasses = "card-flip animate-flip-up";
                     card.style.animationDelay = `${index * 0.1}s`;
                 }
-                card.className = `flex-none min-w-[140px] min-h-[140px] rounded-xl p-4 text-center border snap-center flex flex-col justify-center ${styleClass} ${animClasses}`;
+                // Changed min-w to 140px, w-[140px] and p-2 to fix card size issue
+                card.className = `flex-none w-[140px] h-[140px] rounded-xl p-2 text-center border snap-center flex flex-col justify-center ${styleClass} ${animClasses}`;
 
                 card.innerHTML = `<i class="fas ${item.icon} text-2xl mb-2 opacity-80"></i><div class="text-[10px] font-medium mb-1 truncate opacity-70">${item.title}</div><div class="text-lg font-bold">${displayVal} <span class="text-xs font-normal opacity-60">${item.unit}</span></div>`;
                 container.appendChild(card);
@@ -445,15 +411,17 @@
                 customAnimClasses = "card-flip animate-flip-up";
                 customCard.style.animationDelay = `${currentBatch.length * 0.1}s`;
             }
-            customCard.className = `flex-none min-w-[160px] min-h-[140px] bg-slate-900/50 rounded-xl p-3 text-center border border-dashed border-slate-600 snap-center flex flex-col justify-center hover:border-sky-500/50 transition-colors ${customAnimClasses}`;
+            // Changed min-w to 140px, w-[140px] and adjusted padding/spacing
+            customCard.className = `flex-none w-[140px] h-[140px] bg-slate-900/50 rounded-xl p-2 text-center border border-dashed border-slate-600 snap-center flex flex-col justify-center hover:border-sky-500/50 transition-colors ${customAnimClasses}`;
             
             customCard.innerHTML = `
-                <div class="text-[10px] text-slate-400 font-bold mb-2 uppercase">自訂換算</div>
-                <div class="space-y-2 mb-2">
-                    <input type="text" id="customName" placeholder="項目" class="w-full text-[10px] border border-slate-700 rounded-lg px-2 py-1.5 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600"><input type="number" id="customPrice" placeholder="單價" class="w-full text-[10px] border border-slate-700 rounded-lg px-2 py-1.5 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600" oninput="calcCustomCard()">
+                <div class="text-[10px] text-slate-400 font-bold mb-1 uppercase">自訂換算</div>
+                <div class="space-y-1 mb-1">
+                    <input type="text" id="customName" placeholder="項目" class="w-full text-[10px] border border-slate-700 rounded-lg px-1 py-1 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600">
+                    <input type="number" id="customPrice" placeholder="單價" class="w-full text-[10px] border border-slate-700 rounded-lg px-1 py-1 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600" oninput="calcCustomCard()">
                 </div>
-                <div class="text-sm font-bold text-white bg-slate-800 rounded-lg py-1.5 border border-slate-700">
-                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-xs font-normal text-slate-400"></span>
+                <div class="text-sm font-bold text-white bg-slate-800 rounded-lg py-1 border border-slate-700">
+                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-[10px] font-normal text-slate-400"></span>
                 </div>
             `;
             container.appendChild(customCard);
@@ -474,11 +442,11 @@
             const hint = document.getElementById('bonusHint');
             
             if (customRadio.checked) {
-                // Active Custom
+                // Active Custom (Dark Mode)
                 customBonusWrapper.classList.remove('border-slate-700', 'bg-slate-950');
                 customBonusWrapper.classList.add('border-sky-500', 'bg-slate-900', 'ring-1', 'ring-sky-500');
                 
-                // Disable Buttons
+                // Disable Buttons (Visual) - Dim them out
                 fixedBtn.classList.remove('text-slate-300', 'hover:border-sky-400', 'hover:text-white', 'peer-checked:bg-sky-600', 'peer-checked:border-sky-500');
                 fixedBtn.classList.add('text-slate-600', 'border-slate-800', 'bg-slate-950');
                 
