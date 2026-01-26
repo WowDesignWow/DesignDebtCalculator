@@ -1,568 +1,346 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="zh-TW" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V17.1</title>
+    <title>設計治理與合規風險試算 V36 (Sky Blue Theme)</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <!-- Marked.js for Markdown parsing -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: { 
+                        slate: { 850: '#1e293b', 900: '#0f172a', 950: '#020617' },
+                        // Ensuring sky colors are available (default in v3, but explicit here for clarity)
+                        sky: {
+                            400: '#38bdf8',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                        }
+                    },
+                    animation: { 
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'flip-up': 'flipUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                    },
+                    keyframes: {
+                        flipUp: {
+                            '0%': { opacity: '0', transform: 'rotateX(90deg) translateY(20px)' },
+                            '100%': { opacity: '1', transform: 'rotateX(0deg) translateY(0)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
 
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; background-color: #f0f2f5; }
-        .card-shadow { box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04); }
-        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #334155 100%); }
+        body { 
+            background-color: #020617; 
+            color: #e2e8f0;
+            background-image: 
+                radial-gradient(circle at 50% 0%, rgba(56, 189, 248, 0.1) 0%, transparent 50%), /* sky-400 alpha */
+                radial-gradient(circle at 0% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 50%);
+            overflow-x: hidden;
+        }
         
-        /* Global Scrollbar Styling */
+        /* Modern Scrollbar */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        ::-webkit-scrollbar-track { background: #0f172a; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #475569; }
 
-        /* --- Slot Machine Styles --- */
-        .slot-machine-wrapper {
-            display: inline-flex;
-            align-items: baseline;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            font-weight: 900;
-            line-height: 1;
-            white-space: nowrap; 
-        }
-        .slot-digit-window {
-            display: inline-block;
-            height: 1em;
-            overflow: hidden;
-            position: relative;
-            vertical-align: bottom;
-        }
-        .slot-strip {
-            display: flex;
-            flex-direction: column;
-            transition-timing-function: cubic-bezier(0.1, 0.75, 0.25, 1);
-            transform: translateY(0); 
-        }
-        .slot-num {
-            height: 1em;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
+        /* Slot Machine */
+        .slot-machine-wrapper { display: inline-flex; align-items: baseline; font-weight: 900; line-height: 1; white-space: pre; }
+        .slot-digit-window { display: inline-block; height: 1em; overflow: hidden; position: relative; vertical-align: bottom; }
+        .slot-strip { display: flex; flex-direction: column; transition-timing-function: cubic-bezier(0.1, 0.75, 0.25, 1); transform: translateY(0); }
+        .slot-num { height: 1em; display: flex; align-items: center; justify-content: center; }
 
-        /* --- Slider Styles --- */
+        /* Utils */
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* --- Markdown Table Styles --- */
-        .prose { max-width: none; }
-        .prose table { 
-            width: 100%; 
-            border-collapse: collapse; 
-            margin-bottom: 1em; 
-            font-size: 11px; 
-            table-layout: fixed; 
-        }
-        .prose th, .prose td { 
-            border: 1px solid #e2e8f0; 
-            padding: 10px; 
-            text-align: left; 
-            vertical-align: top;
-            width: 20%; 
-            word-wrap: break-word; 
-            overflow-wrap: break-word;
-        }
-        .prose th { background-color: #f1f5f9; font-weight: 700; color: #334155; position: sticky; top: 0; }
-        .table-container { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        /* Markdown Table */
+        .prose { max-width: none; color: #94a3b8; }
+        .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1em; font-size: 12px; table-layout: fixed; }
+        .prose th, .prose td { border: 1px solid #334155; padding: 12px; text-align: left; vertical-align: top; width: 20%; word-wrap: break-word; }
+        .prose th { background-color: #1e293b; font-weight: 600; color: #f8fafc; position: sticky; top: 0; }
+        .prose strong { color: #f1f5f9; font-weight: 600; }
+        .prose code { background-color: #1e293b; padding: 2px 6px; border-radius: 4px; color: #38bdf8; font-size: 0.9em; border: 1px solid #334155; }
         
-        .prose h1 { font-size: 1.25em; font-weight: 800; margin-bottom: 0.5em; color: #1e293b; }
-        .prose ul { list-style-type: disc; padding-left: 1.2em; margin-top: 0.2em; }
-        .prose li { margin-bottom: 0.2em; }
-        .prose strong { color: #0f172a; font-weight: 700; }
-        .prose code { background-color: #f1f5f9; padding: 2px 4px; border-radius: 4px; color: #ef4444; font-size: 0.9em; }
+        /* Interactive Inputs (Updated to Sky Blue) */
+        .input-standard { transition: all 0.2s ease; border-color: #334155; }
+        .input-standard:hover { border-color: #38bdf8; /* sky-400 */ }
+        .input-standard:focus { border-color: #0ea5e9; /* sky-500 */ box-shadow: 0 0 0 1px #0ea5e9; outline: none; }
+        
+        .input-wrapper-custom { transition: all 0.2s ease; }
+        .input-wrapper-custom:hover { border-color: #38bdf8 !important; }
 
-        /* --- Interactive Hover Styles --- */
-        .interactive-element:hover { border-color: #60a5fa; }
-        input[type="number"]:hover, select:hover { border-color: #60a5fa; }
+        .interactive-element { transition: all 0.2s ease; }
+        .interactive-element:hover { border-color: #38bdf8; color: white; }
+        
+        /* Input Focus Glow (Updated to Sky Blue) */
+        .input-glow:focus-within {
+            box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.2); /* sky-400 alpha */
+            border-color: #38bdf8;
+        }
+
+        input[type=number] { padding-right: 3rem; } 
+        .cursor-grab { cursor: grab; }
+        .cursor-grabbing { cursor: grabbing; }
+        .card-flip { opacity: 0; transform-origin: top center; }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="bg-white w-full max-w-lg rounded-3xl card-shadow overflow-hidden flex flex-col h-[90vh]">
+    <!-- MAIN APP CONTAINER -->
+    <div class="w-full max-w-lg rounded-3xl overflow-hidden flex flex-col h-[90vh] bg-slate-900/50 backdrop-blur-xl border border-slate-800 shadow-2xl relative z-10">
         
         <!-- App Header -->
-        <div class="gradient-bg p-6 text-white text-center flex-shrink-0 relative overflow-hidden">
-            <div class="absolute top-0 right-0 p-4 opacity-10"><i class="fas fa-chart-line text-6xl"></i></div>
-            <h1 class="text-2xl font-bold mb-1 tracking-wide">設計治理與風險試算</h1>
-            <p class="text-slate-300 text-xs uppercase tracking-wider font-semibold">Efficiency Loss + Compliance Risk</p>
+        <div class="p-6 text-center flex-shrink-0 relative overflow-hidden border-b border-slate-800 bg-slate-900/80">
+            
+            <h1 class="text-2xl font-bold mb-1 tracking-tight text-white mt-2">設計治理與風險試算</h1>
+            <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">Efficiency Loss + Compliance Risk</p>
         </div>
 
-        <!-- Main Content (Inputs) -->
-        <div class="p-6 space-y-5 overflow-y-auto flex-grow bg-slate-50">
+        <!-- Main Content -->
+        <div class="p-6 space-y-6 overflow-y-auto flex-grow bg-slate-950/30" id="mainInputArea">
             
             <!-- Section 1: Basic Cost -->
-            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm">
-                <div class="flex items-center text-slate-800 font-bold border-b border-slate-100 pb-2 mb-3">
-                    <i class="fas fa-coins text-blue-600 mr-2"></i>
-                    <span>基礎人力成本</span>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-sm hover:border-slate-700 transition-colors">
+                <div class="flex items-center text-white font-bold border-b border-slate-800 pb-3 mb-4">
+                    <!-- Updated Icon BG to Sky -->
+                    <div class="w-8 h-8 rounded-lg bg-sky-500/10 flex items-center justify-center mr-3"><i class="fas fa-coins text-sky-400"></i></div><span>基礎人力成本</span>
                 </div>
-                <div class="space-y-3">
+                <div class="space-y-4">
                     <div>
-                        <label class="text-xs text-slate-500 font-bold uppercase block mb-1">平均月薪 (TWD)</label>
-                        <input type="number" id="salary" value="70000" class="w-full bg-slate-50 border border-slate-300 rounded-lg p-2 font-semibold text-slate-700 focus:ring-2 focus:ring-blue-500 outline-none transition-colors">
+                        <label class="text-xs text-slate-400 font-bold uppercase block mb-1.5 ml-1">平均月薪 (TWD)</label>
+                        <div class="relative group"><input type="number" id="salary" value="70000" class="w-full bg-slate-950 border rounded-xl p-3 font-semibold text-white placeholder-slate-600 input-standard"></div>
                     </div>
-                    
-                    <!-- Bonus Section -->
                     <div>
-                        <label class="text-xs text-slate-500 font-bold uppercase block mb-2">年終／獎金</label>
-                        <div class="space-y-2">
-                            <div class="flex space-x-2">
-                                <label class="cursor-pointer block flex-1">
-                                    <input type="radio" name="bonusType" value="14" id="bonusFixedRadio" class="peer sr-only" checked onchange="toggleBonusInput()">
-                                    <div id="fixedBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
-                                        固定 14 個月
-                                    </div>
-                                </label>
-                                <label class="cursor-pointer block flex-1">
-                                    <input type="radio" name="bonusType" value="12" id="bonusNoneRadio" class="peer sr-only" onchange="toggleBonusInput()">
-                                    <div id="noneBonusBtn" class="interactive-element w-full text-center text-xs py-2 border border-slate-300 rounded-md peer-checked:bg-blue-600 peer-checked:text-white peer-checked:border-blue-600 transition flex items-center justify-center font-medium text-slate-600 bg-white">
-                                        無
-                                    </div>
-                                </label>
+                        <label class="text-xs text-slate-400 font-bold uppercase block mb-2 ml-1">年終／獎金</label>
+                        <div class="space-y-3">
+                            <div class="flex space-x-3">
+                                <label class="cursor-pointer block flex-1"><input type="radio" name="bonusType" value="14" id="bonusFixedRadio" class="peer sr-only" checked onchange="toggleBonusInput()"><div id="fixedBonusBtn" class="w-full text-center text-xs py-3 border border-slate-700 rounded-xl bg-slate-900 text-slate-300 font-medium interactive-element peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-500">固定 14 個月</div></label>
+                                <label class="cursor-pointer block flex-1"><input type="radio" name="bonusType" value="12" id="bonusNoneRadio" class="peer sr-only" onchange="toggleBonusInput()"><div id="noneBonusBtn" class="w-full text-center text-xs py-3 border border-slate-700 rounded-xl bg-slate-900 text-slate-300 font-medium interactive-element hover:border-sky-400 peer-checked:bg-sky-600 peer-checked:text-white peer-checked:border-sky-500">無</div></label>
                             </div>
-                            
-                            <!-- Custom Input -->
-                            <div class="flex items-center space-x-2">
-                                <div class="relative w-full">
-                                    <input type="radio" name="bonusType" value="custom" id="bonusCustomRadio" class="peer sr-only" onchange="toggleBonusInput()">
-                                    <div id="customBonusWrapper" class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden transition-all cursor-text hover:border-blue-400" onclick="selectCustomRadio()">
-                                        <input type="number" id="customBonus" placeholder="輸入自訂獎金總額" 
-                                            class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-semibold text-slate-700 focus:outline-none placeholder-slate-400"
-                                            onfocus="selectCustomRadio()">
-                                        <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">
-                                            元 (TWD)
-                                        </div>
-                                    </div>
+                            <div class="relative w-full">
+                                <input type="radio" name="bonusType" value="custom" id="bonusCustomRadio" class="peer sr-only" onchange="toggleBonusInput()">
+                                <div id="customBonusWrapper" class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden cursor-text group input-wrapper-custom" onclick="selectCustomRadio()">
+                                    <input type="number" id="customBonus" placeholder="輸入自訂獎金總額" class="w-[80%] bg-transparent border-none p-3 pl-4 text-sm font-semibold text-white focus:outline-none placeholder-slate-600" onfocus="selectCustomRadio()">
+                                    <div class="w-[20%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400 font-medium transition-colors">元</div>
                                 </div>
                             </div>
                         </div>
-                        <p class="text-[10px] text-slate-400 mt-1.5 flex items-start">
-                            <i class="fas fa-info-circle mr-1 mt-0.5"></i>
-                            <span id="bonusHint">系統會將獎金自動攤提至每月月薪成本中。</span>
-                        </p>
+                        <p class="text-[10px] text-slate-500 mt-2 flex items-start ml-1"><i class="fas fa-info-circle mr-1.5 mt-0.5 text-sky-500"></i><span id="bonusHint">系統會將獎金自動攤提至每月月薪成本中。</span></p>
                     </div>
                 </div>
             </div>
 
             <!-- Section 2: Efficiency Loss -->
-            <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm relative group">
-                <div class="absolute -left-1 top-4 w-1 h-12 bg-orange-400 rounded-r"></div>
-                <div class="flex items-center text-slate-800 font-bold border-b border-slate-100 pb-2 mb-3">
-                    <i class="fas fa-stopwatch text-orange-500 mr-2"></i>
-                    <span>治理缺失：效率耗損</span>
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-sm hover:border-slate-700 transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-orange-500 to-red-500"></div>
+                <div class="flex items-center text-white font-bold border-b border-slate-800 pb-3 mb-4 pl-2">
+                    <div class="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mr-3"><i class="fas fa-stopwatch text-orange-400"></i></div><span>治理缺失：效率耗損</span>
                 </div>
-                
-                <!-- Designer -->
-                <div class="mb-4 pb-4 border-b border-slate-50 last:border-0 last:pb-0">
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="text-xs font-bold text-slate-700 flex items-center">
-                            <i class="fas fa-pen-nib text-slate-400 mr-1.5 text-[10px]"></i>設計師
-                        </label>
-                        <span class="text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">痛點：無 SSOT / 狀態混亂</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
-                                <input type="number" id="nDes" value="5" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">人</div>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
-                                <input type="number" id="tDes" value="0.75" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">小時</div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="mb-5 pb-5 border-b border-slate-800 last:border-0 last:pb-0 pl-2">
+                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-pen-nib text-slate-500 mr-2"></i>設計師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點：無 SSOT / 狀態混亂</span></div>
+                    <div class="flex gap-3"><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">團隊人數</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="nDes" value="5" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">人</div></div></div><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">每日浪費</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="tDes" value="0.75" step="0.25" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none bg-orange-500/5"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">小時</div></div></div></div>
                 </div>
-
-                <!-- Developer -->
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <label class="text-xs font-bold text-slate-700 flex items-center">
-                            <i class="fas fa-code text-slate-400 mr-1.5 text-[10px]"></i>工程師
-                        </label>
-                        <span class="text-[10px] text-orange-600 bg-orange-50 px-2 py-0.5 rounded-full border border-orange-100">痛點：重複 Override / 猜測樣式</span>
-                    </div>
-                    <div class="flex gap-3">
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">團隊人數</label>
-                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
-                                <input type="number" id="nDev" value="3" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">人</div>
-                            </div>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-[10px] text-slate-400 block mb-1 uppercase tracking-wide font-semibold">每日浪費工時</label>
-                            <div class="flex w-full rounded-lg border border-slate-300 bg-slate-50 overflow-hidden focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition-colors hover:border-blue-400">
-                                <input type="number" id="tDev" value="0.5" step="0.25" class="w-[80%] bg-transparent border-none p-2 pl-3 text-sm font-bold text-slate-700 focus:outline-none bg-orange-50/30">
-                                <div class="w-[20%] flex items-center justify-center border-l border-slate-300 bg-slate-100 text-xs text-slate-500 font-medium">小時</div>
-                            </div>
-                        </div>
-                    </div>
+                <div class="pl-2">
+                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-code text-slate-500 mr-2"></i>工程師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點：重複 Override / 猜測</span></div>
+                    <div class="flex gap-3"><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">團隊人數</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="nDev" value="3" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">人</div></div></div><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">每日浪費</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="tDev" value="0.5" step="0.25" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none bg-orange-500/5"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">小時</div></div></div></div>
                 </div>
             </div>
 
             <!-- Section 3: WCAG Risk -->
-            <div class="bg-white rounded-xl border border-red-200 p-4 shadow-sm relative overflow-hidden">
-                <div class="absolute -left-1 top-4 w-1 h-12 bg-red-500 rounded-r"></div>
-                <div class="flex items-center justify-between border-b border-red-100 pb-2 mb-3">
-                    <div class="font-bold text-slate-800 flex items-center">
-                        <i class="fas fa-gavel text-red-500 mr-2"></i>
-                        <span>法律與合規風險 (WCAG)</span>
-                    </div>
-                    <label class="relative inline-flex items-center cursor-pointer">
-                        <input type="checkbox" id="wcagToggle" class="sr-only peer" onchange="toggleWcagOptions()">
-                        <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-red-600 transition-colors"></div>
-                    </label>
+            <div class="rounded-2xl border border-red-900/30 bg-slate-900/50 p-5 shadow-sm hover:border-red-900/50 transition-colors relative overflow-hidden">
+                <div class="absolute top-0 left-0 w-1 h-full bg-red-600"></div>
+                <div class="flex items-center justify-between border-b border-red-900/30 pb-3 mb-4 pl-2">
+                    <div class="font-bold text-white flex items-center"><div class="w-8 h-8 rounded-lg bg-red-500/10 flex items-center justify-center mr-3"><i class="fas fa-gavel text-red-500"></i></div><span>法律與合規風險</span></div>
+                    <label class="relative inline-flex items-center cursor-pointer"><input type="checkbox" id="wcagToggle" class="sr-only peer" onchange="toggleWcagOptions()"><div class="w-11 h-6 bg-slate-800 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-slate-400 after:border-slate-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-red-600 peer-checked:after:bg-white peer-checked:after:border-white"></div></label>
                 </div>
-                
-                <div id="wcagOptions" class="hidden space-y-3 transition-all">
-                    <p class="text-[10px] text-red-500 mb-2">
-                        <i class="fas fa-exclamation-triangle"></i> 
-                        2025/2026 EAA 與 ADA 強制執行，違規將面臨高額罰款。
-                    </p>
-                    <select id="riskRegion" class="w-full text-sm border-red-200 border rounded-lg p-2.5 bg-red-50 text-slate-700 focus:ring-red-500 transition-colors hover:border-blue-400">
-                        <option value="0">請選擇目標市場風險...</option>
-                        <option value="600000">🇺🇸 美國 (ADA 訴訟風險 ~2萬美金)</option>
-                        <option value="3300000">🇪🇺 歐盟 (EAA 罰鍰上限風險 ~10萬歐元)</option>
-                        <option value="1">🇹🇼 台灣 (公部門標案資格喪失)</option>
-                    </select>
+                <div id="wcagOptions" class="hidden space-y-3 transition-all pl-2">
+                    <p class="text-[10px] text-red-400 mb-2"><i class="fas fa-exclamation-triangle mr-1"></i>2025/2026 EAA 與 ADA 強制執行，違規將面臨高額罰款。</p>
+                    <div class="relative group"><select id="riskRegion" class="w-full text-sm bg-slate-950 border border-red-900/50 rounded-xl p-3 text-slate-200 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none hover:border-red-700 transition-colors appearance-none cursor-pointer input-standard"><option value="0" class="bg-slate-900">請選擇目標市場風險...</option><option value="600000" class="bg-slate-900">🇺🇸 美國 (ADA 訴訟風險 ~2萬美金)</option><option value="3300000" class="bg-slate-900">🇪🇺 歐盟 (EAA 罰鍰上限風險 ~10萬歐元)</option><option value="1" class="bg-slate-900">🇹🇼 台灣 (公部門標案資格喪失)</option></select><div class="absolute right-4 top-3.5 pointer-events-none text-red-500"><i class="fas fa-chevron-down text-xs"></i></div></div>
                 </div>
-                <div id="wcagPlaceholder" class="text-xs text-slate-400 italic">
-                    開啟此選項以評估潛在法律罰款與市場損失。
-                </div>
+                <div id="wcagPlaceholder" class="text-xs text-slate-500 italic pl-2">開啟此選項以評估潛在法律罰款與市場損失。</div>
             </div>
 
             <!-- Logic Explanation -->
-            <div class="bg-white p-5 rounded-xl border border-slate-200 shadow-sm">
+            <div class="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-sm hover:border-slate-700 transition-colors">
                 <div class="flex justify-between items-center cursor-pointer group" onclick="toggleLogic()">
-                    <h3 class="text-sm font-bold text-slate-700 flex items-center">
-                        <i class="fas fa-book-open mr-2 text-slate-400 group-hover:text-blue-500 transition-colors"></i> 
-                        計算邏輯詳解
+                    <h3 class="text-sm font-bold text-slate-300 flex items-center group-hover:text-white transition-colors">
+                        <i class="fas fa-book-open mr-2 text-slate-500 group-hover:text-sky-400"></i> 計算邏輯詳解
                     </h3>
-                    <div class="bg-slate-50 p-1 rounded-full border border-slate-200 shadow-sm group-hover:border-blue-300 transition-colors">
-                        <i class="fas fa-chevron-down text-slate-400 text-xs transform transition-transform duration-300" id="logicIcon"></i>
+                    <div class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center group-hover:border-sky-500 group-hover:bg-sky-500/10 transition-colors">
+                        <i class="fas fa-chevron-down text-slate-500 text-[10px] transform transition-transform duration-300 group-hover:text-sky-400" id="logicIcon"></i>
                     </div>
                 </div>
-                
-                <div id="logicContent" class="hidden mt-4 space-y-4 text-xs text-slate-600 leading-relaxed border-t border-slate-200 pt-4">
-                    <!-- Logic 1 -->
+                <div id="logicContent" class="hidden mt-5 space-y-4 text-xs text-slate-400 leading-relaxed border-t border-slate-800 pt-4">
                     <div>
-                        <h4 class="font-bold text-slate-800 mb-1 flex items-center">
-                            <span class="w-4 h-4 bg-blue-600 text-white rounded-full flex items-center justify-center text-[10px] mr-2">1</span>
-                            真實人力成本 (Fully Loaded Cost)
-                        </h4>
-                        <p class="pl-6 mb-2">公式：<code class="bg-slate-100 px-1 rounded text-slate-800">((月薪 × 12 + 年終獎金) ÷ 12) × 1.5 ÷ 160小時</code></p>
-                        <p class="pl-6 text-slate-500 mb-2">
-                            <strong>年終攤提：</strong> 將年薪與額外獎金總額攤提至每月，反映公司實際支付的月平均現金流。
-                        </p>
-                        <p class="pl-6 text-slate-500">
-                            <strong>1.5倍營運係數：</strong> 涵蓋勞健保(約20%)、退休金(6%)、辦公室租金、軟體授權(Adobe/Figma)、硬體折舊與管理費。
-                        </p>
-                    </div>
-
-                    <!-- Logic 2 -->
-                    <div>
-                        <h4 class="font-bold text-slate-800 mb-1 flex items-center">
-                            <span class="w-4 h-4 bg-orange-500 text-white rounded-full flex items-center justify-center text-[10px] mr-2">2</span>
-                            費米推定：效率浪費
-                        </h4>
-                        <ul class="pl-6 list-disc list-outside space-y-1 text-slate-500">
-                            <li><strong>設計端：</strong> 在混亂的檔案夾中尋找、重複繪製已存在的按鈕、處理狀態不一致。</li>
-                            <li><strong>開發端：</strong> 測量像素(Pixel-peeping)、猜測設計意圖、撰寫重複的 CSS Override。</li>
+                        <h4 class="font-bold text-slate-200 mb-1 flex items-center"><span class="w-4 h-4 bg-sky-600 text-white rounded-full flex items-center justify-center text-[10px] mr-2">1</span>真實人力成本 (Fully Loaded Cost)</h4>
+                        <p class="pl-6 mb-2">公式：<code class="text-sky-300 bg-slate-950 px-1 border border-slate-800 rounded">((月薪 × 12 + 年終獎金) ÷ 12) × 1.5 ÷ 160小時</code></p>
+                        <ul class="pl-6 list-disc list-outside space-y-1 text-slate-400">
+                            <li><strong class="text-slate-300">年終攤提：</strong> 將年薪與額外獎金總額攤提至每月，反映公司實際支付的月平均現金流。</li>
+                            <li><strong class="text-slate-300">1.5倍營運係數：</strong> 此為財務會計保守估計值，涵蓋：
+                                <ul class="list-none pl-0 mt-1 space-y-1 text-slate-500">
+                                    <li>• 法定成本：勞健保(約20%)、退休金(6%)。</li>
+                                    <li>• 營運成本：辦公室租金、水電、網路、行政管理費。</li>
+                                    <li>• 軟硬體成本：Figma/Adobe 授權、電腦設備折舊。</li>
+                                </ul>
+                            </li>
                         </ul>
                     </div>
-
-                    <!-- Logic 3 -->
                     <div>
-                        <h4 class="font-bold text-slate-800 mb-1 flex items-center">
-                            <span class="w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[10px] mr-2">3</span>
-                            風險估值 (Risk Assessment)
-                        </h4>
-                        <p class="pl-6 text-slate-500">
-                            <strong>合規風險：</strong> 依據國際訴訟案例（ADA）與罰款上限（EAA）設定的潛在風險敞口。這並非固定成本，而是「不處理就會面臨」的預期損失。
-                        </p>
+                        <h4 class="font-bold text-slate-200 mb-1 flex items-center"><span class="w-4 h-4 bg-orange-500 text-white rounded-full flex items-center justify-center text-[10px] mr-2">2</span>費米推定：效率浪費 (Efficiency Waste)</h4>
+                        <p class="pl-6 mb-2">依據設計債現況推算的每日無效工時：</p>
+                        <ul class="pl-6 list-disc list-outside space-y-1 text-slate-400">
+                            <li><strong class="text-slate-300">設計端：</strong> 在混亂的檔案中尋找舊稿、因無共用元件而重複繪製、手動同步多個狀態的修改。</li>
+                            <li><strong class="text-slate-300">開發端：</strong> 測量設計稿像素(Pixel-peeping)、猜測設計意圖、撰寫重複的 CSS Override 來覆蓋樣式。</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-200 mb-1 flex items-center"><span class="w-4 h-4 bg-red-600 text-white rounded-full flex items-center justify-center text-[10px] mr-2">3</span>風險估值 (Risk Assessment)</h4>
+                        <p class="pl-6 text-slate-400"><strong class="text-slate-300">合規風險：</strong> 依據國際訴訟案例（ADA 平均和解金）與歐盟法規（EAA 罰鍰上限）設定的潛在風險敞口。這並非固定成本，而是「不處理就會面臨」的預期損失。</p>
                     </div>
                 </div>
             </div>
-
         </div>
 
-        <!-- Footer / Action -->
-        <div class="p-5 border-t border-slate-200 bg-white z-10">
-            <button onclick="calculate()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 px-4 rounded-xl shadow-lg transition-all flex items-center justify-center group">
-                <span>計算總體營運衝擊</span>
-                <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
-            </button>
+        <!-- Footer -->
+        <div class="p-5 border-t border-slate-800 bg-slate-900/90 backdrop-blur z-10 flex-shrink-0">
+            <!-- Updated Button Gradient -->
+            <button onclick="calculate()" class="group w-full bg-gradient-to-r from-sky-600 to-indigo-600 hover:from-sky-500 hover:to-indigo-500 text-white font-bold py-4 px-4 rounded-xl shadow-lg shadow-sky-900/30 transition-all flex items-center justify-center border border-white/10 active:scale-95"><span class="text-lg tracking-wide">計算總體營運衝擊</span><div class="ml-3 w-6 h-6 rounded-full bg-white/20 flex items-center justify-center group-hover:bg-white/30 transition-colors"><i class="fas fa-arrow-right text-sm group-hover:translate-x-0.5 transition-transform"></i></div></button>
         </div>
     </div>
 
-    <!-- RESULT MODAL (Popup) -->
-    <div id="resultModal" class="fixed inset-0 bg-slate-900/80 flex items-center justify-center z-50 hidden backdrop-blur-sm transition-opacity opacity-0 p-5">
-        <div class="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl transform scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto relative" id="modalContent">
-            
-            <!-- Modal Header -->
-            <div class="flex justify-between items-start mb-4">
-                <div>
-                    <h2 class="text-slate-500 text-xs font-bold uppercase tracking-widest">年度預估總衝擊</h2>
-                    <p class="text-[10px] text-slate-400">效率耗損 (OpEx) + 潛在合規風險 (Risk)</p>
-                </div>
-                <button onclick="closeModal()" class="text-slate-400 hover:text-slate-600"><i class="fas fa-times text-xl"></i></button>
-            </div>
+    <!-- RESULT MODAL -->
+    <div id="resultModal" class="fixed inset-0 z-50 hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed inset-0 bg-black/80 backdrop-blur-sm transition-opacity opacity-0" id="modalOverlay"></div>
+        <div class="fixed inset-0 z-10 w-screen overflow-y-auto">
+            <div class="flex min-h-full items-center justify-center p-4 text-center sm:p-0">
+                <div class="relative transform overflow-hidden rounded-3xl bg-slate-900 border border-slate-700 text-left shadow-2xl transition-all sm:my-8 sm:w-full sm:max-w-2xl opacity-0 scale-95" id="modalPanel">
+                    
+                    <div class="bg-slate-900 px-6 py-6 sm:p-8">
+                        <div class="flex justify-between items-start mb-6 border-b border-slate-800 pb-4">
+                            <div><h2 class="text-slate-200 text-sm font-bold uppercase tracking-widest flex items-center"><i class="fas fa-chart-pie mr-2 text-sky-500"></i>年度預估總衝擊</h2><p class="text-[10px] text-slate-500 mt-1">效率耗損 (OpEx) + 潛在合規風險 (Risk)</p></div>
+                            <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 cursor-pointer"><i class="fas fa-times text-xl"></i></button>
+                        </div>
 
-            <!-- SLOT MACHINE RESULT (Red + Negative) with "Pre-text" -->
-            <div class="text-[40px] font-black text-red-600 mb-8 tracking-tight flex items-center justify-center flex-wrap" id="finalResultContainer">
-                -$0
-            </div>
+                        <!-- 1. BIG RESULT -->
+                        <div class="mb-8 text-center" id="finalResultContainer"></div>
 
-            <!-- Opportunity Cost Slider Section -->
-            <div class="mb-6 relative group">
-                <div class="absolute inset-0 bg-blue-50 rounded-xl transform -rotate-1 opacity-50"></div>
-                <div class="relative bg-white border border-blue-100 rounded-xl p-4 shadow-sm overflow-hidden">
-                    
-                    <!-- Slider Header with Dice -->
-                    <div class="flex justify-between items-center mb-3">
-                        <h3 class="text-xs font-bold text-blue-800 uppercase tracking-wide flex items-center">
-                            <i class="fas fa-search-dollar mr-1.5"></i> 這筆錢原本可以拿來...
-                        </h3>
-                        <div class="flex items-center">
-                            <!-- Dice Button -->
-                            <button onclick="refreshOpportunities()" class="p-1.5 rounded-lg hover:bg-blue-100 text-blue-600 transition-colors mr-2 cursor-pointer group" title="隨機換算">
-                                <i class="fas fa-dice text-lg group-hover:scale-110 transition-transform"></i>
-                            </button>
-                            <!-- Vertical Divider -->
-                            <div class="h-4 w-px bg-slate-300 mr-2"></div>
-                            <!-- Slide Text -->
-                            <div class="text-blue-300 text-xs flex items-center">滑動查看</div>
+                        <!-- 2. Opportunity Slider (Reordered) -->
+                        <div class="mb-6 relative rounded-2xl border border-sky-900/30 bg-slate-950/30 p-5 overflow-hidden">
+                            <div class="flex justify-between items-center mb-4">
+                                <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wide flex items-center"><i class="fas fa-search-dollar mr-2"></i> 這筆錢原本可以拿來...</h3>
+                                <div class="flex items-center">
+                                    <button onclick="refreshOpportunities()" class="p-2 rounded-lg bg-slate-800 hover:bg-sky-600 text-sky-400 hover:text-white transition-all mr-3 cursor-pointer border border-slate-700" title="隨機換算"><i class="fas fa-dice text-lg transition-transform duration-500"></i></button>
+                                </div>
+                            </div>
+                            <div class="relative"><div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch py-4 cursor-grab select-none active:cursor-grabbing" id="opportunitySlider"></div><div id="sliderFadeOverlay" class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent pointer-events-none transition-opacity duration-300"></div></div>
                         </div>
-                    </div>
-                    
-                    <!-- Wrapper for slider + fade -->
-                    <div class="relative">
-                        <!-- Scrollable Container -->
-                        <div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch" id="opportunitySlider">
-                            <!-- Items will be injected by JS -->
-                        </div>
-                        <!-- Fade Overlay on Right -->
-                        <div id="sliderFadeOverlay" class="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-white via-white/80 to-transparent pointer-events-none transition-opacity duration-300"></div>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Breakdown & Markdown Details -->
-            <div class="space-y-3 mb-6 border-t border-slate-100 pt-4">
-                <h4 class="text-[10px] font-bold text-slate-400 uppercase">損失細項</h4>
-                <!-- Efficiency -->
-                <div class="bg-slate-50 rounded-lg p-3">
-                    <div class="flex justify-between items-center text-xs cursor-pointer" onclick="toggleEfficiencyDetails()">
-                        <div class="flex items-center text-slate-700 font-bold">
-                            <i class="fas fa-hourglass-half text-orange-400 w-5 text-center mr-2"></i>效率浪費
-                        </div>
-                        <div class="flex items-center">
-                            <span class="font-bold text-slate-700 mr-2" id="efficiencyResult">$0</span>
-                            <i class="fas fa-chevron-down text-slate-400 transition-transform" id="effDetailsIcon"></i>
-                        </div>
-                    </div>
-                    
-                    <!-- Dynamic Markdown Content Container (NO HEIGHT LIMIT) -->
-                    <div id="efficiencyDetailsContent" class="hidden mt-3 border-t border-slate-200">
-                        <div class="p-3 text-xs text-slate-600 bg-slate-50/50 rounded-b-lg">
-                            <div class="table-container prose prose-sm max-w-none">
-                                <!-- Content injected by JS -->
-                                載入說明中...
+
+                        <!-- 3. Health & Delay (Reordered) -->
+                        <div class="grid grid-cols-2 gap-4 mb-6">
+                            <div class="bg-slate-950/50 rounded-xl border border-slate-800 p-4 relative overflow-hidden">
+                                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">團隊健康度評級</div>
+                                <div class="flex items-end"><div class="text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br from-red-500 to-orange-600" id="healthGrade">F</div><div class="text-xs text-slate-400 mb-1 ml-2 font-medium">/ 極度危險</div></div>
+                            </div>
+                            <div class="bg-slate-950/50 rounded-xl border border-slate-800 p-4 relative overflow-hidden">
+                                <div class="text-[10px] text-slate-500 font-bold uppercase tracking-widest mb-1">專案延遲模擬</div>
+                                <div class="flex items-end"><div class="text-xl font-bold text-white">每季落後 <span class="text-orange-400 text-2xl" id="delayDays">0</span> 天</div></div>
+                                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden"><div class="bg-orange-500 h-full w-[80%] animate-pulse-slow"></div></div>
                             </div>
                         </div>
-                    </div>
-                </div>
 
-                <!-- Risk -->
-                <div id="riskBreakdown" class="hidden flex justify-between items-center text-xs p-3">
-                    <div class="flex items-center text-slate-600">
-                        <i class="fas fa-gavel text-red-400 w-5 text-center mr-2"></i>合規風險
+                        <!-- 4. Modal Logic Explanation -->
+                        <div class="mb-6 rounded-2xl border border-slate-800 bg-slate-900/50 p-5 shadow-sm hover:border-slate-700 transition-colors">
+                            <div class="flex justify-between items-center cursor-pointer group" onclick="toggleModalLogic()">
+                                <h3 class="text-sm font-bold text-slate-300 flex items-center group-hover:text-white transition-colors">
+                                    <i class="fas fa-calculator mr-2 text-slate-500 group-hover:text-sky-400"></i> 評級與延遲計算邏輯
+                                </h3>
+                                <div class="w-6 h-6 rounded-full border border-slate-700 flex items-center justify-center group-hover:border-sky-500 group-hover:bg-sky-500/10 transition-colors">
+                                    <i class="fas fa-chevron-down text-slate-500 text-[10px] transform transition-transform duration-300 group-hover:text-sky-400" id="modalLogicIcon"></i>
+                                </div>
+                            </div>
+                            <div id="modalLogicContent" class="hidden mt-5 space-y-4 text-xs text-slate-400 leading-relaxed border-t border-slate-800 pt-4">
+                                <div>
+                                    <strong class="text-slate-200">1. 團隊健康度 (Health Grade)</strong>
+                                    <p class="mt-1">基於「無效工時佔比」進行評級：<code>(總浪費工時 / 團隊總產能)</code></p>
+                                    <div class="grid grid-cols-5 gap-1 mt-2 text-[10px] text-center font-bold">
+                                        <div class="bg-green-900/30 text-green-400 rounded py-1 border border-green-900/50">&lt;5%<br>A</div>
+                                        <div class="bg-lime-900/30 text-lime-400 rounded py-1 border border-lime-900/50">5-10%<br>B</div>
+                                        <div class="bg-yellow-900/30 text-yellow-400 rounded py-1 border border-yellow-900/50">10-15%<br>C</div>
+                                        <div class="bg-orange-900/30 text-orange-400 rounded py-1 border border-orange-900/50">15-20%<br>D</div>
+                                        <div class="bg-red-900/30 text-red-400 rounded py-1 border border-red-900/50">&gt;20%<br>F</div>
+                                    </div>
+                                </div>
+                                <div><strong class="text-slate-200">2. 專案延遲模擬 (Project Delay)</strong><p class="mt-1">假設一個標準季度為 60 個工作天 (3個月)。</p><p>公式：<code>(年度總浪費工時 ÷ 8小時) ÷ 4季</code></p><p class="mt-1 text-slate-500">代表每過一季，因為重複作業與溝通內耗，專案進度就會憑空蒸發的工作天數。</p></div>
+                            </div>
+                        </div>
+
+                        <!-- 5. Breakdown -->
+                        <div class="space-y-4 border-t border-slate-800 pt-6">
+                            <h4 class="text-[10px] font-bold text-slate-500 uppercase tracking-wider">損失細項 breakdown</h4>
+                            <div class="bg-slate-800/50 rounded-xl p-4 border border-slate-800 hover:border-slate-700 transition-colors">
+                                <div class="flex justify-between items-center text-xs cursor-pointer" onclick="toggleEfficiencyDetails()">
+                                    <div class="flex items-center text-slate-300 font-bold"><i class="fas fa-hourglass-half text-orange-400 w-5 text-center mr-3"></i>效率浪費</div>
+                                    <div class="flex items-center"><span class="font-bold text-slate-200 mr-3" id="efficiencyResult">$0</span><i class="fas fa-chevron-down text-slate-500 transition-transform" id="effDetailsIcon"></i></div>
+                                </div>
+                                <div id="efficiencyDetailsContent" class="hidden mt-4 pt-2"><div class="max-h-[300px] overflow-y-auto pr-2 text-xs text-slate-400"><div class="table-container prose prose-invert prose-sm max-w-none">載入說明中...</div></div></div>
+                            </div>
+                            <div id="riskBreakdown" class="hidden bg-red-900/10 rounded-xl p-4 border border-red-900/30">
+                                <div class="flex justify-between items-center text-xs"><div class="flex items-center text-red-200 font-bold"><i class="fas fa-gavel text-red-500 w-5 text-center mr-3"></i>合規風險</div><div class="font-bold text-red-400" id="riskResult">$0</div></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-8">
+                            <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl transition-all border border-slate-700 hover:border-slate-600 shadow-lg">關閉並調整策略</button>
+                        </div>
                     </div>
-                    <div class="font-bold text-red-600" id="riskResult">$0</div>
                 </div>
             </div>
-
-            <button onclick="closeModal()" class="w-full bg-slate-900 text-white font-bold py-3.5 rounded-xl hover:bg-slate-800 transition shadow-lg">
-                關閉並調整策略
-            </button>
         </div>
     </div>
 
     <script>
-        // --- 140 OPPORTUNITY ITEMS POOL ---
-        // Categories: HR, Tech, Office, Life, Biz
+        let isFirstSlide = true; 
+
+        // UPDATED POOL ITEMS (blue -> sky where appropriate)
         const poolItems = [
-            // HR & Hiring (20)
             { title: '增聘資深工程師', unit: '人', icon: 'fa-user-plus', color: 'blue', price: (b) => b * 1.1 },
-            { title: '增聘資深設計師', unit: '人', icon: 'fa-pen-nib', color: 'purple', price: (b) => b * 0.9 },
-            { title: '增聘專案經理 (PM)', unit: '人', icon: 'fa-tasks', color: 'indigo', price: (b) => b * 1.0 },
-            { title: '增聘 QA 工程師', unit: '人', icon: 'fa-bug', color: 'teal', price: (b) => b * 0.8 },
-            { title: '增聘實習生 (一年)', unit: '人', icon: 'fa-graduation-cap', color: 'green', price: 360000 },
-            { title: '高階獵頭服務費', unit: '人', icon: 'fa-user-tie', color: 'slate', price: 300000 },
-            { title: '新進人員簽約金', unit: '人', icon: 'fa-file-signature', color: 'yellow', price: 100000 },
-            { title: '留任獎金 (Retention)', unit: '人', icon: 'fa-hand-holding-usd', color: 'orange', price: 150000 },
-            { title: '年度調薪預算', unit: '人', icon: 'fa-chart-line', color: 'emerald', price: 60000 },
-            { title: '員工推薦獎金', unit: '人', icon: 'fa-users', color: 'cyan', price: 30000 },
-            { title: '外部技術顧問', unit: '月', icon: 'fa-chalkboard-teacher', color: 'violet', price: 100000 },
-            { title: '敏捷教練 (Agile Coach)', unit: '天', icon: 'fa-stopwatch', color: 'rose', price: 20000 },
-            { title: '資深架構師諮詢', unit: '小時', icon: 'fa-sitemap', color: 'slate', price: 8000 },
-            { title: 'UI/UX 專家審查', unit: '次', icon: 'fa-search', color: 'pink', price: 50000 },
-            { title: '使用者測試受訪者', unit: '人', icon: 'fa-comment-dots', color: 'lime', price: 2000 },
-            { title: '員工教育訓練補助', unit: '人', icon: 'fa-book-reader', color: 'blue', price: 20000 },
-            { title: '全體員工健檢', unit: '場', icon: 'fa-heartbeat', color: 'red', price: 150000 }, // Est 20 ppl
-            { title: '團體保險費', unit: '年', icon: 'fa-shield-alt', color: 'sky', price: 100000 },
-            { title: '部門季獎金', unit: '季', icon: 'fa-trophy', color: 'amber', price: 200000 },
-            { title: '資遣費 (風險預備)', unit: '人', icon: 'fa-door-open', color: 'gray', price: 100000 },
-
-            // Hardware & Tech (25)
-            { title: '頂規 MacBook Pro', unit: '台', icon: 'fa-laptop', color: 'gray', price: 80000 },
-            { title: 'MacBook Air', unit: '台', icon: 'fa-laptop', color: 'slate', price: 35000 },
-            { title: 'Dell XPS 開發機', unit: '台', icon: 'fa-laptop-code', color: 'zinc', price: 60000 },
-            { title: 'ThinkPad X1', unit: '台', icon: 'fa-laptop', color: 'neutral', price: 55000 },
-            { title: 'iMac 24吋', unit: '台', icon: 'fa-desktop', color: 'orange', price: 45000 },
-            { title: 'Mac Studio', unit: '台', icon: 'fa-microchip', color: 'stone', price: 70000 },
-            { title: 'Apple Pro Display XDR', unit: '台', icon: 'fa-tv', color: 'black', price: 160000 },
-            { title: '4K 專業螢幕', unit: '台', icon: 'fa-tv', color: 'blue', price: 15000 },
-            { title: '34吋 曲面螢幕', unit: '台', icon: 'fa-tv', color: 'indigo', price: 25000 },
-            { title: 'iPad Pro (測試機)', unit: '台', icon: 'fa-tablet-alt', color: 'purple', price: 30000 },
-            { title: 'iPhone 15 Pro (測試機)', unit: '台', icon: 'fa-mobile-alt', color: 'green', price: 40000 },
-            { title: 'Android 旗艦機 (測試)', unit: '台', icon: 'fa-robot', color: 'lime', price: 30000 },
-            { title: 'HHKB 機械鍵盤', unit: '把', icon: 'fa-keyboard', color: 'slate', price: 10000 },
-            { title: 'Logitech MX Master', unit: '顆', icon: 'fa-mouse', color: 'gray', price: 4000 },
-            { title: '降噪耳機 (Sony/Bose)', unit: '副', icon: 'fa-headphones', color: 'sky', price: 10000 },
-            { title: '人體工學滑鼠', unit: '顆', icon: 'fa-mouse', color: 'teal', price: 3000 },
-            { title: 'Wacom 繪圖板', unit: '塊', icon: 'fa-pencil-alt', color: 'pink', price: 12000 },
-            { title: 'NAS 儲存設備', unit: '台', icon: 'fa-hdd', color: 'amber', price: 20000 },
-            { title: 'GPU 算力租賃 (A100)', unit: '月', icon: 'fa-memory', color: 'green', price: 40000 },
-            { title: 'VR 頭盔 (Vision Pro)', unit: '台', icon: 'fa-vr-cardboard', color: 'fuchsia', price: 120000 },
-            { title: '測試用伺服器', unit: '台', icon: 'fa-server', color: 'blue', price: 50000 },
-            { title: '機房冷氣電費', unit: '月', icon: 'fa-snowflake', color: 'cyan', price: 15000 },
-            { title: 'Raspberry Pi 叢集', unit: '組', icon: 'fa-microchip', color: 'red', price: 10000 },
-            { title: '3D 印表機', unit: '台', icon: 'fa-print', color: 'orange', price: 25000 },
-            { title: '會議室視訊設備', unit: '組', icon: 'fa-video', color: 'slate', price: 80000 },
-
-            // SaaS & Software (25)
-            { title: 'Figma 企業年費', unit: '年', icon: 'fa-file-invoice-dollar', color: 'purple', price: 150000 },
-            { title: 'Adobe CC 全套', unit: '年', icon: 'fa-palette', color: 'red', price: 30000 },
-            { title: 'Github Copilot 團隊', unit: '年', icon: 'fa-robot', color: 'slate', price: 60000 },
-            { title: 'ChatGPT Plus (全員)', unit: '年', icon: 'fa-comment-alt', color: 'green', price: 80000 },
+            { title: '增聘資深設計師', unit: '人', icon: 'fa-pen-nib', color: 'violet', price: (b) => b * 0.9 },
+            { title: '頂規 MacBook Pro', unit: '台', icon: 'fa-laptop', color: 'slate', price: 80000 },
+            { title: 'Herman Miller 椅', unit: '張', icon: 'fa-chair', color: 'teal', price: 45000 },
+            { title: 'Figma 企業年費', unit: '年', icon: 'fa-file-invoice-dollar', color: 'pink', price: 150000 },
+            { title: 'Tesla Model 3', unit: '輛', icon: 'fa-car', color: 'rose', price: 1750000 },
             { title: 'AWS 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'orange', price: 30000 },
-            { title: 'GCP 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'blue', price: 30000 },
-            { title: 'Azure 雲端帳單', unit: '月', icon: 'fa-cloud', color: 'sky', price: 30000 },
-            { title: 'Vercel Pro 訂閱', unit: '年', icon: 'fa-server', color: 'black', price: 20000 },
-            { title: 'Slack Business', unit: '年', icon: 'fa-comments', color: 'fuchsia', price: 50000 },
-            { title: 'Zoom Pro 帳號', unit: '年', icon: 'fa-video', color: 'blue', price: 15000 },
-            { title: 'Notion Team Plan', unit: '年', icon: 'fa-book', color: 'stone', price: 30000 },
-            { title: 'Jira/Confluence', unit: '年', icon: 'fa-tasks', color: 'blue', price: 40000 },
-            { title: 'Linear 專案管理', unit: '年', icon: 'fa-list-check', color: 'indigo', price: 30000 },
-            { title: 'Asana 進階版', unit: '年', icon: 'fa-check-circle', color: 'rose', price: 35000 },
-            { title: 'Miro 協作白板', unit: '年', icon: 'fa-border-all', color: 'yellow', price: 25000 },
-            { title: 'Typeform 進階版', unit: '年', icon: 'fa-wpforms', color: 'teal', price: 15000 },
-            { title: 'Webflow 網站託管', unit: '年', icon: 'fa-globe', color: 'blue', price: 12000 },
+            { title: 'Copilot 團隊', unit: '年', icon: 'fa-robot', color: 'emerald', price: 60000 },
             { title: 'Google Workspace', unit: '年', icon: 'fa-envelope', color: 'red', price: 80000 },
-            { title: 'Microsoft 365', unit: '年', icon: 'fa-file-word', color: 'blue', price: 80000 },
-            { title: '1Password 企業版', unit: '年', icon: 'fa-key', color: 'slate', price: 20000 },
-            { title: 'Sentry 錯誤監控', unit: '年', icon: 'fa-bug', color: 'violet', price: 10000 },
-            { title: 'Datadog 監控', unit: '月', icon: 'fa-chart-area', color: 'purple', price: 15000 },
-            { title: 'Intercom 客服系統', unit: '月', icon: 'fa-headset', color: 'blue', price: 10000 },
-            { title: 'Zendesk 客服系統', unit: '月', icon: 'fa-ticket-alt', color: 'green', price: 8000 },
-            { title: 'Salesforce 授權', unit: '人/年', icon: 'fa-cloud', color: 'sky', price: 50000 },
-
-            // Office & Admin (25)
-            { title: 'Herman Miller 椅', unit: '張', icon: 'fa-chair', color: 'black', price: 45000 },
-            { title: '升降桌 (電動)', unit: '張', icon: 'fa-arrows-alt-v', color: 'stone', price: 15000 },
-            { title: '信義區辦公室租金', unit: '坪/月', icon: 'fa-building', color: 'slate', price: 3500 },
-            { title: '內湖商辦租金', unit: '坪/月', icon: 'fa-building', color: 'zinc', price: 1800 },
-            { title: '共享辦公室席位', unit: '人/月', icon: 'fa-chair', color: 'orange', price: 8000 },
-            { title: '辦公室清潔費', unit: '月', icon: 'fa-broom', color: 'teal', price: 12000 },
-            { title: '辦公室電費', unit: '月', icon: 'fa-bolt', color: 'yellow', price: 20000 },
-            { title: '商業光纖網路', unit: '月', icon: 'fa-wifi', color: 'blue', price: 3000 },
-            { title: 'Nespresso 膠囊', unit: '年', icon: 'fa-coffee', color: 'amber', price: 20000 },
-            { title: '星巴克咖啡豆', unit: '年', icon: 'fa-mug-hot', color: 'green', price: 15000 },
-            { title: '辦公室零食櫃', unit: '月', icon: 'fa-cookie-bite', color: 'orange', price: 10000 },
-            { title: '啤酒/飲料庫存', unit: '月', icon: 'fa-beer', color: 'yellow', price: 8000 },
-            { title: 'Dyson 吸塵器', unit: '台', icon: 'fa-quidditch', color: 'purple', price: 20000 },
-            { title: 'Dyson 空氣清淨機', unit: '台', icon: 'fa-wind', color: 'slate', price: 25000 },
-            { title: '免治馬桶座', unit: '個', icon: 'fa-toilet', color: 'white', price: 15000 },
-            { title: '加大白板牆', unit: '面', icon: 'fa-chalkboard', color: 'slate', price: 10000 },
-            { title: '投影機 (高流明)', unit: '台', icon: 'fa-video', color: 'gray', price: 30000 },
-            { title: '碎紙機 (商用)', unit: '台', icon: 'fa-trash', color: 'black', price: 5000 },
-            { title: '飲水機保養費', unit: '年', icon: 'fa-tint', color: 'blue', price: 6000 },
-            { title: '辦公室盆栽租賃', unit: '月', icon: 'fa-seedling', color: 'green', price: 3000 },
-            { title: '雜誌訂閱 (設計)', unit: '年', icon: 'fa-book-open', color: 'pink', price: 5000 },
-            { title: '計程車費報帳', unit: '月', icon: 'fa-taxi', color: 'yellow', price: 10000 },
-            { title: '快遞物流費', unit: '月', icon: 'fa-truck', color: 'slate', price: 5000 },
-            { title: '文具用品採購', unit: '季', icon: 'fa-pencil-ruler', color: 'indigo', price: 8000 },
-            { title: '印表機租賃', unit: '月', icon: 'fa-print', color: 'gray', price: 3000 },
-
-            // Lifestyle, Marketing & Misc (45)
             { title: '米其林部門聚餐', unit: '場', icon: 'fa-utensils', color: 'red', price: 60000 },
-            { title: '每週五下午茶', unit: '年', icon: 'fa-pizza-slice', color: 'orange', price: 100000 },
-            { title: '沖繩員工旅遊', unit: '人', icon: 'fa-umbrella-beach', color: 'cyan', price: 30000 },
-            { title: '北海道滑雪團', unit: '人', icon: 'fa-snowflake', color: 'blue', price: 50000 },
-            { title: '國內豪華露營', unit: '人', icon: 'fa-campground', color: 'green', price: 10000 },
-            { title: '五星級飯店住宿', unit: '晚', icon: 'fa-bed', color: 'slate', price: 12000 },
-            { title: 'Tesla Model 3', unit: '輛', icon: 'fa-car', color: 'red', price: 1750000 },
-            { title: 'Gogoro 機車', unit: '台', icon: 'fa-motorcycle', color: 'gray', price: 80000 },
-            { title: '商務艙機票 (美西)', unit: '張', icon: 'fa-plane', color: 'blue', price: 120000 },
-            { title: '高鐵商務艙 (年)', unit: '人', icon: 'fa-subway', color: 'orange', price: 50000 },
-            { title: '健身房補助', unit: '人/年', icon: 'fa-dumbbell', color: 'slate', price: 12000 },
-            { title: '按摩服務 (到府)', unit: '次', icon: 'fa-spa', color: 'pink', price: 2000 },
-            { title: 'Netflix 訂閱 (年)', unit: '份', icon: 'fa-film', color: 'red', price: 3500 },
-            { title: 'Spotify 訂閱 (年)', unit: '份', icon: 'fa-music', color: 'green', price: 2000 },
-            { title: 'PS5 遊戲主機', unit: '台', icon: 'fa-gamepad', color: 'blue', price: 18000 },
-            { title: 'Switch 主機', unit: '台', icon: 'fa-gamepad', color: 'red', price: 10000 },
-            { title: 'Steam 遊戲購物金', unit: '份', icon: 'fa-gamepad', color: 'black', price: 5000 },
             { title: '奈良美智版畫', unit: '幅', icon: 'fa-palette', color: 'yellow', price: 200000 },
-            { title: 'BE@RBRICK 公仔', unit: '隻', icon: 'fa-robot', color: 'white', price: 20000 },
-            { title: '勞力士手錶', unit: '支', icon: 'fa-clock', color: 'emerald', price: 350000 },
-            { title: '愛馬仕柏金包', unit: '個', icon: 'fa-shopping-bag', color: 'orange', price: 400000 },
-            { title: 'FB/IG 廣告投放', unit: '天', icon: 'fa-ad', color: 'blue', price: 5000 },
-            { title: 'Google 關鍵字廣告', unit: '天', icon: 'fa-search', color: 'green', price: 5000 },
-            { title: 'KOL 業配合作', unit: '次', icon: 'fa-bullhorn', color: 'pink', price: 50000 },
-            { title: '新聞稿發布', unit: '篇', icon: 'fa-newspaper', color: 'slate', price: 30000 },
-            { title: '展覽攤位租金', unit: '場', icon: 'fa-store', color: 'indigo', price: 100000 },
-            { title: '活動場地租借', unit: '天', icon: 'fa-building', color: 'gray', price: 20000 },
-            { title: '專業攝影師', unit: '天', icon: 'fa-camera', color: 'black', price: 15000 },
-            { title: '形象影片製作', unit: '支', icon: 'fa-video', color: 'red', price: 150000 },
-            { title: 'Logo 設計費', unit: '式', icon: 'fa-drafting-compass', color: 'purple', price: 50000 },
-            { title: '律師諮詢費', unit: '小時', icon: 'fa-gavel', color: 'slate', price: 6000 },
-            { title: '商標註冊費', unit: '件', icon: 'fa-registered', color: 'blue', price: 10000 },
-            { title: '會計師簽證費', unit: '年', icon: 'fa-file-contract', color: 'green', price: 50000 },
-            { title: '專利申請費', unit: '件', icon: 'fa-certificate', color: 'yellow', price: 60000 },
-            { title: 'GDPR 合規顧問', unit: '次', icon: 'fa-shield-alt', color: 'blue', price: 100000 },
-            { title: 'ISO 認證輔導', unit: '案', icon: 'fa-stamp', color: 'slate', price: 200000 },
-            { title: '資安滲透測試', unit: '次', icon: 'fa-user-secret', color: 'black', price: 150000 },
-            { title: '伺服器壓力測試', unit: '次', icon: 'fa-tachometer-alt', color: 'red', price: 50000 },
-            { title: '使用者訪談費', unit: '場', icon: 'fa-comments', color: 'teal', price: 3000 },
-            { title: '市場調查報告', unit: '份', icon: 'fa-chart-pie', color: 'indigo', price: 50000 },
-            { title: '競品分析報告', unit: '份', icon: 'fa-search-dollar', color: 'green', price: 30000 },
-            { title: '技術大會門票', unit: '張', icon: 'fa-ticket-alt', color: 'purple', price: 8000 },
-            { title: '線上課程訂閱', unit: '年', icon: 'fa-laptop-code', color: 'blue', price: 5000 },
-            { title: '技術書籍採購', unit: '批', icon: 'fa-book', color: 'orange', price: 10000 },
-            { title: '網域續費 (10年)', unit: '個', icon: 'fa-globe', color: 'slate', price: 5000 }
+            { title: '商務艙 (美西)', unit: '張', icon: 'fa-plane', color: 'sky', price: 120000 },
+            { title: '員工旅遊 (沖繩)', unit: '人', icon: 'fa-umbrella-beach', color: 'cyan', price: 30000 },
+            { title: 'App Store 廣告', unit: '天', icon: 'fa-ad', color: 'rose', price: 5000 },
+            { title: 'Nespresso 膠囊', unit: '年', icon: 'fa-coffee', color: 'amber', price: 20000 },
+            { title: '法律顧問諮詢', unit: '時', icon: 'fa-balance-scale', color: 'emerald', price: 6000 },
+            { title: '技術年會門票', unit: '張', icon: 'fa-ticket-alt', color: 'lime', price: 8000 },
+            { title: '機械鍵盤 (全員)', unit: '組', icon: 'fa-keyboard', color: 'fuchsia', price: 40000 },
+            { title: '4K 專業螢幕', unit: '台', icon: 'fa-desktop', color: 'zinc', price: 18000 },
+            { title: '增聘專案經理', unit: '人', icon: 'fa-tasks', color: 'indigo', price: (b) => b * 1.0 },
+            { title: '增聘 QA 工程師', unit: '人', icon: 'fa-bug', color: 'sky', price: (b) => b * 0.8 },
         ];
 
-        let shuffledPool = [];
-        let poolIndex = 0;
-        let currentBatch = []; 
+        let shuffledPool = [], poolIndex = 0, currentBatch = [];
 
-        // Fisher-Yates Shuffle
         function shuffle(array) {
             let currentIndex = array.length, randomIndex;
             while (currentIndex != 0) {
@@ -574,7 +352,6 @@
         }
 
         function initPool() {
-            // Create array of indices 0 to poolItems.length - 1
             let indices = Array.from({length: poolItems.length}, (_, i) => i);
             shuffledPool = shuffle(indices);
             poolIndex = 0;
@@ -584,11 +361,7 @@
         function getNextBatch() {
             let batchIndices = [];
             for (let i = 0; i < 7; i++) {
-                if (poolIndex >= shuffledPool.length) {
-                    // Reshuffle if exhausted to ensure new order
-                    shuffledPool = shuffle(shuffledPool);
-                    poolIndex = 0;
-                }
+                if (poolIndex >= shuffledPool.length) { shuffledPool = shuffle(shuffledPool); poolIndex = 0; }
                 batchIndices.push(shuffledPool[poolIndex]);
                 poolIndex++;
             }
@@ -600,10 +373,11 @@
             const btn = document.querySelector('button[title="隨機換算"] i');
             btn.classList.add('animate-spin');
             setTimeout(() => btn.classList.remove('animate-spin'), 500);
-
-            getNextBatch(); 
+            isFirstSlide = false; 
+            getNextBatch();
             
-            const totalImpact = parseFloat(document.getElementById('resultModal').getAttribute('data-total-impact')) || 0;
+            const totalImpactAttr = document.getElementById('resultModal').getAttribute('data-total-impact');
+            const totalImpact = totalImpactAttr ? parseFloat(totalImpactAttr) : 0;
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
             let annualPackage = 0;
@@ -612,63 +386,122 @@
             else annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
             
             const personAnnualCost = annualPackage * 1.5; 
-
+            
             renderOpportunitySlider(totalImpact, personAnnualCost);
         }
 
         function renderOpportunitySlider(totalImpact, personAnnualCost) {
             const container = document.getElementById('opportunitySlider');
             container.innerHTML = ''; 
-
             if (currentBatch.length === 0) initPool();
 
-            currentBatch.forEach(item => {
-                let price = 0;
-                if (typeof item.price === 'function') {
-                    price = item.price(personAnnualCost);
-                } else {
-                    price = item.price;
-                }
-
-                let val = 0;
-                if (price > 0) {
-                    val = totalImpact / price;
-                }
-
+            currentBatch.forEach((item, index) => {
+                let price = typeof item.price === 'function' ? item.price(personAnnualCost) : item.price;
+                let val = price > 0 ? totalImpact / price : 0;
                 let displayVal = val < 10 ? val.toFixed(1) : Math.floor(val).toLocaleString();
-                if (val < 0.1 && val > 0) displayVal = "<0.1";
-                if (val === 0) displayVal = "0";
+                if (val < 0.1 && val > 0) displayVal = "<0.1"; if (val === 0) displayVal = "0";
+
+                // Updated colorMap to use SKY for blue cases
+                const colorMap = {
+                    blue: 'bg-sky-500/10 text-sky-400 border-sky-500/20', 
+                    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/20', 
+                    indigo: 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20', 
+                    sky: 'bg-sky-500/10 text-sky-400 border-sky-500/20', 
+                    teal: 'bg-teal-500/10 text-teal-400 border-teal-500/20', 
+                    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20', 
+                    green: 'bg-green-500/10 text-green-400 border-green-500/20', 
+                    lime: 'bg-lime-500/10 text-lime-400 border-lime-500/20', 
+                    yellow: 'bg-yellow-500/10 text-yellow-400 border-yellow-500/20', 
+                    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/20', 
+                    orange: 'bg-orange-500/10 text-orange-400 border-orange-500/20', 
+                    red: 'bg-red-500/10 text-red-400 border-red-500/20', 
+                    rose: 'bg-rose-500/10 text-rose-400 border-rose-500/20', 
+                    pink: 'bg-pink-500/10 text-pink-400 border-pink-500/20', 
+                    fuchsia: 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/20', 
+                    violet: 'bg-violet-500/10 text-violet-400 border-violet-500/20', 
+                    slate: 'bg-slate-700/30 text-slate-300 border-slate-600/30', 
+                    gray: 'bg-gray-700/30 text-gray-300 border-gray-600/30', 
+                    zinc: 'bg-zinc-700/30 text-zinc-300 border-zinc-600/30', 
+                    neutral: 'bg-neutral-700/30 text-neutral-300 border-neutral-600/30', 
+                    stone: 'bg-stone-700/30 text-stone-300 border-stone-600/30'
+                };
+                const styleClass = colorMap[item.color] || colorMap['slate'];
 
                 const card = document.createElement('div');
-                card.className = `flex-none min-w-[140px] bg-${item.color}-50 rounded-lg p-3 text-center border border-${item.color}-100 snap-center flex flex-col justify-center`;
-                card.innerHTML = `
-                    <i class="fas ${item.icon} text-${item.color}-500 text-lg mb-1"></i>
-                    <div class="text-[10px] text-slate-500 font-medium mb-0.5 whitespace-normal leading-tight h-8 flex items-center justify-center">${item.title}</div>
-                    <div class="text-sm font-bold text-${item.color}-700">
-                        ${displayVal} <span class="text-xs font-normal">${item.unit}</span>
-                    </div>
-                `;
+                let animClasses = "";
+                if (isFirstSlide) {
+                    animClasses = "card-flip animate-flip-up";
+                    card.style.animationDelay = `${index * 0.1}s`;
+                }
+                card.className = `flex-none min-w-[140px] min-h-[140px] rounded-xl p-4 text-center border snap-center flex flex-col justify-center ${styleClass} ${animClasses}`;
+
+                card.innerHTML = `<i class="fas ${item.icon} text-2xl mb-2 opacity-80"></i><div class="text-[10px] font-medium mb-1 truncate opacity-70">${item.title}</div><div class="text-lg font-bold">${displayVal} <span class="text-xs font-normal opacity-60">${item.unit}</span></div>`;
                 container.appendChild(card);
             });
 
             const customCard = document.createElement('div');
-            customCard.className = `flex-none min-w-[160px] bg-white rounded-lg p-2 text-center border-2 border-dashed border-slate-300 snap-center flex flex-col justify-center`;
+            let customAnimClasses = "";
+            if (isFirstSlide) {
+                customAnimClasses = "card-flip animate-flip-up";
+                customCard.style.animationDelay = `${currentBatch.length * 0.1}s`;
+            }
+            customCard.className = `flex-none min-w-[160px] min-h-[140px] bg-slate-900/50 rounded-xl p-3 text-center border border-dashed border-slate-600 snap-center flex flex-col justify-center hover:border-sky-500/50 transition-colors ${customAnimClasses}`;
+            
             customCard.innerHTML = `
                 <div class="text-[10px] text-slate-400 font-bold mb-2 uppercase">自訂換算</div>
-                <div class="space-y-1 mb-2">
-                    <input type="text" id="customName" placeholder="項目 (例: 伺服器)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400">
-                    <input type="number" id="customPrice" placeholder="單價 (例: 50000)" class="w-full text-[10px] border border-slate-200 rounded px-1 py-1 text-center bg-slate-50 focus:outline-none focus:border-blue-400" oninput="calcCustomCard()">
+                <div class="space-y-2 mb-2">
+                    <input type="text" id="customName" placeholder="項目" class="w-full text-[10px] border border-slate-700 rounded-lg px-2 py-1.5 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600"><input type="number" id="customPrice" placeholder="單價" class="w-full text-[10px] border border-slate-700 rounded-lg px-2 py-1.5 text-center bg-slate-950 text-white focus:outline-none focus:border-sky-500 placeholder-slate-600" oninput="calcCustomCard()">
                 </div>
-                <div class="text-sm font-bold text-slate-700 bg-slate-100 rounded py-1">
-                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-xs font-normal"></span>
+                <div class="text-sm font-bold text-white bg-slate-800 rounded-lg py-1.5 border border-slate-700">
+                    <span id="customResult">-</span> <span id="customUnitDisplay" class="text-xs font-normal text-slate-400"></span>
                 </div>
             `;
             container.appendChild(customCard);
-            
             initSliderScroll();
         }
 
-        // ... (Remaining Logic for Markdown, Calculation, Toggles etc. preserved) ...
+        // --- Core Logic ---
+        function selectCustomRadio() {
+            const radio = document.getElementById('bonusCustomRadio');
+            if (!radio.checked) { radio.checked = true; toggleBonusInput(); }
+        }
+
+        function toggleBonusInput() {
+            const customRadio = document.getElementById('bonusCustomRadio');
+            const customBonusWrapper = document.getElementById('customBonusWrapper');
+            const fixedBtn = document.getElementById('fixedBonusBtn');
+            const noneBtn = document.getElementById('noneBonusBtn');
+            const hint = document.getElementById('bonusHint');
+            
+            if (customRadio.checked) {
+                // Active Custom
+                customBonusWrapper.classList.remove('border-slate-700', 'bg-slate-950');
+                customBonusWrapper.classList.add('border-sky-500', 'bg-slate-900', 'ring-1', 'ring-sky-500');
+                
+                // Disable Buttons
+                fixedBtn.classList.remove('text-slate-300', 'hover:border-sky-400', 'hover:text-white', 'peer-checked:bg-sky-600', 'peer-checked:border-sky-500');
+                fixedBtn.classList.add('text-slate-600', 'border-slate-800', 'bg-slate-950');
+                
+                noneBtn.classList.remove('text-slate-300', 'hover:border-sky-400', 'hover:text-white', 'peer-checked:bg-sky-600', 'peer-checked:border-sky-500');
+                noneBtn.classList.add('text-slate-600', 'border-slate-800', 'bg-slate-950');
+
+                hint.innerText = "已啟用自訂獎金，將攤提至每月成本。";
+            } else {
+                // Inactive Custom
+                customBonusWrapper.classList.add('border-slate-700', 'bg-slate-950');
+                customBonusWrapper.classList.remove('border-sky-500', 'bg-slate-900', 'ring-1', 'ring-sky-500');
+                
+                // Enable Buttons
+                fixedBtn.classList.add('text-slate-300', 'hover:border-sky-400', 'hover:text-white', 'peer-checked:bg-sky-600', 'peer-checked:border-sky-500');
+                fixedBtn.classList.remove('text-slate-600', 'border-slate-800', 'bg-slate-950'); 
+                
+                noneBtn.classList.add('text-slate-300', 'hover:border-sky-400', 'hover:text-white', 'peer-checked:bg-sky-600', 'peer-checked:border-sky-500');
+                noneBtn.classList.remove('text-slate-600', 'border-slate-800', 'bg-slate-950');
+                
+                hint.innerText = "系統會將獎金自動攤提至每月月薪成本中。";
+            }
+        }
+
         const defaultMarkdown = `
 # 設計債對工程開發效率之影響分析
 
@@ -676,10 +509,10 @@
 
 | 影響類別 | 關聯設計債 | 工程影響核心 | 具體後果與現象 | 💰 成本浪費 |
 | :--- | :--- | :--- | :--- | :--- |
-| **1. 重複造輪子**<br>*(Development Waste)* | • 1-1 無共用元件<br>• 1-3 常用模式未收錄 | **從「組裝積木」退化為「手工雕刻」**<br>違反 DRY (Don't Repeat Yourself) 原則。 | • **效率低落**：無法直接 Import，開發簡單表單時間從 30 分鐘暴增至 3 小時。<br>• **代碼冗餘**：專案充斥幾十個「似是而非」的重複組件。<br>• **效能隱憂**：缺乏官方組件導致引入多餘第三方套件，造成 Bundle size 膨脹。 | **純開發工時 (Man-hours)**<br>高價值的核心邏輯開發時間，被浪費在低價值的重複切版上。 |
-| **2. 無效溝通與確認**<br>*(Communication Overhead)* | • 2-1 Figma 結構混亂<br>• 2-2 無 Handoff Checklist | **中斷「心流 (Flow)」與上下文切換**<br>工程師淪為「找檔案」與「猜謎」的機器。 | • **尋寶遊戲**：在 v1/v2/Final 中迷航，截圖問「哪個是準的？」。<br>• **猜謎遊戲**：缺乏 RWD/狀態標註，工程師靠直覺猜測導致 Bug。<br>• **專注力歸零**：每次確認規格被打斷，需 23 分鐘才能重回編碼狀態。 | **溝通成本 & 認知負荷**<br>工程師情緒煩躁、滿意度下降，導致隱性怠工。 |
-| **3. 重工與修補**<br>*(Cost of Rework)* | • 1-2 跨平台不一致<br>• 3-1 A11y 缺失 | **將「開發階段」問題延後到「QA/維運」爆發**<br>越晚發現 Bug，修復成本越高。 | • **邏輯分裂**：因平台差異寫大量 \`if (isMobile)\`，製造 Bug 溫床。<br>• **債務利息**：上線後補做 A11y，成本是開發時的 10 倍（需重構 DOM）。<br>• **來回拉扯**：Ticket 在 QA/RD/Design 之間無限 Ping-Pong，無法結案。 | **重構成本 & QA 循環成本**<br>大量資源消耗在修復本可避免的錯誤上。 |
-| **4. 維護與擴充困難**<br>*(Scalability Issues)* | • 1-1 無 Token 化<br>• 3-2 Wording 不統一 | **系統變得「脆弱 (Fragile)」且難以修改**<br>任何全域修改都像在拆彈。 | • **全域修改恐懼**：改品牌色需手動替換幾千個色碼，極易改錯造成事故。<br>• **硬編碼詛咒**：文案無 Pattern 導致 Hard-code，修改文案需動 Code 並重新部署 (Deploy)。 | **維運成本 & 機會成本**<br>團隊被舊代碼綁架，無法快速響應市場新需求。 |
+| **1. 重複造輪子**<br>*(Development Waste)* | • 1-1 無共用元件<br>• 1-3 常用模式未收錄 | **從「組裝積木」退化為「手工雕刻」**<br>違反 DRY 原則。 | • **效率低落**：開發簡單表單時間從 30 分暴增至 3 小時。<br>• **代碼冗餘**：專案充斥重複組件。<br>• **效能隱憂**：Bundle size 膨脹。 | **純開發工時**<br>核心開發時間被浪費在切版上。 |
+| **2. 無效溝通與確認**<br>*(Communication Overhead)* | • 2-1 Figma 結構混亂<br>• 2-2 無 Handoff Checklist | **中斷「心流」與上下文切換**<br>工程師淪為「找檔案」機器。 | • **尋寶遊戲**：在 v1/v2/Final 中迷航。<br>• **猜謎遊戲**：缺乏標註靠直覺猜測。<br>• **專注力歸零**：打斷後需 23 分鐘重回狀態。 | **溝通成本**<br>工程師滿意度下降。 |
+| **3. 重工與修補**<br>*(Cost of Rework)* | • 1-2 跨平台不一致<br>• 3-1 A11y 缺失 | **將問題延後到「QA/維運」爆發**<br>越晚發現 Bug，修復成本越高。 | • **邏輯分裂**：因平台差異寫大量 if-else。<br>• **債務利息**：事後補做 A11y 成本是 10 倍。<br>• **來回拉扯**：Ticket 無限 Ping-Pong。 | **重構成本**<br>資源消耗在修復錯誤上。 |
+| **4. 維護與擴充困難**<br>*(Scalability Issues)* | • 1-1 無 Token 化<br>• 3-2 Wording 不統一 | **系統變得「脆弱」且難以修改**<br>任何全域修改都像在拆彈。 | • **全域修改恐懼**：改色碼極易改錯。<br>• **硬編碼詛咒**：文案 Hard-code 需重部署。 | **維運成本**<br>被舊代碼綁架。 |
 `;
 
         async function loadMarkdown() {
@@ -710,37 +543,15 @@
             }
         }
 
-        function selectCustomRadio() {
-            const radio = document.getElementById('bonusCustomRadio');
-            if (!radio.checked) {
-                radio.checked = true;
-                toggleBonusInput();
-            }
-        }
-
-        function toggleBonusInput() {
-            const customRadio = document.getElementById('bonusCustomRadio');
-            const customBonusWrapper = document.getElementById('customBonusWrapper');
-            const fixedBtn = document.getElementById('fixedBonusBtn');
-            const noneBtn = document.getElementById('noneBonusBtn');
-            const hint = document.getElementById('bonusHint');
-            
-            if (customRadio.checked) {
-                customBonusWrapper.classList.remove('bg-slate-50', 'border-slate-300');
-                customBonusWrapper.classList.add('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
-                fixedBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300'); 
-                fixedBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
-                noneBtn.classList.add('bg-slate-50', 'text-slate-500', 'border-slate-300');
-                noneBtn.classList.remove('bg-white', 'text-slate-600', 'border-slate-300');
-                hint.innerText = "已啟用自訂獎金，將攤提至每月成本。";
+        function toggleModalLogic() {
+            const content = document.getElementById('modalLogicContent');
+            const icon = document.getElementById('modalLogicIcon');
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.classList.add('rotate-180');
             } else {
-                customBonusWrapper.classList.add('bg-slate-50', 'border-slate-300');
-                customBonusWrapper.classList.remove('bg-white', 'border-blue-500', 'ring-1', 'ring-blue-500');
-                fixedBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
-                fixedBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
-                noneBtn.classList.remove('bg-slate-50', 'text-slate-500', 'border-slate-200');
-                noneBtn.classList.add('bg-white', 'text-slate-600', 'border-slate-300');
-                hint.innerText = "系統會將獎金自動攤提至每月月薪成本中。";
+                content.classList.add('hidden');
+                icon.classList.remove('rotate-180');
             }
         }
 
@@ -771,14 +582,24 @@
         }
 
         function runSlotMachineAnimation(container, finalValue) {
-            const formattedString = "預估損失  -" + new Intl.NumberFormat('zh-TW', { 
+            const formattedString = "-" + new Intl.NumberFormat('zh-TW', { 
                 style: 'currency', 
                 currency: 'TWD', 
                 maximumFractionDigits: 0 
             }).format(finalValue);
 
             container.innerHTML = '';
-            container.classList.add('slot-machine-wrapper');
+            // New Layout: Label on top left of number
+            const wrapper = document.createElement('div');
+            wrapper.className = 'flex flex-col items-start'; // Align label to left
+
+            const label = document.createElement('div');
+            label.textContent = '預估損失';
+            label.className = 'text-sm text-red-400 font-bold mb-1 opacity-80'; // Updated style
+            wrapper.appendChild(label);
+
+            const numberRow = document.createElement('div');
+            numberRow.className = 'slot-machine-wrapper text-5xl font-black text-red-500 tracking-tight'; // Big Number
 
             const chars = formattedString.split('');
             chars.forEach((char, index) => {
@@ -788,34 +609,15 @@
                     const strip = document.createElement('div');
                     strip.className = 'slot-strip';
                     let numbersHTML = '';
-                    for (let set = 3; set > 0; set--) { // Simplified loop
-                       for (let i = 0; i <= 9; i++) {
-                            numbersHTML += `<div class="slot-num">${i}</div>`;
-                        }
-                    }
-                    for (let set = 0; set < 3; set++) {
-                        for (let i = 0; i <= 9; i++) {
-                            numbersHTML += `<div class="slot-num">${i}</div>`;
-                        }
-                    }
-                    numbersHTML = '';
-                    for (let set = 0; set < 3; set++) {
-                        for (let i = 0; i <= 9; i++) {
-                            numbersHTML += `<div class="slot-num">${i}</div>`;
-                        }
-                    }
-
+                    for (let set = 0; set < 3; set++) { for (let i = 0; i <= 9; i++) { numbersHTML += `<div class="slot-num">${i}</div>`; } }
                     strip.innerHTML = numbersHTML;
                     windowDiv.appendChild(strip);
-                    container.appendChild(windowDiv);
-
+                    numberRow.appendChild(windowDiv);
                     const targetVal = parseInt(char);
                     const targetIndex = 20 + targetVal; 
-                    const delay = index * 100; 
+                    const delay = index * 80; 
                     const duration = 1500;
-                    
                     void strip.offsetWidth;
-
                     setTimeout(() => {
                         strip.style.transitionDuration = `${duration}ms`;
                         strip.style.transitionDelay = `${delay}ms`;
@@ -824,24 +626,21 @@
                 } else {
                     const span = document.createElement('span');
                     span.textContent = char;
-                    if (char === ' ') {
-                        span.style.width = '0.25em'; 
-                        span.style.display = 'inline-block';
-                    }
-                    container.appendChild(span);
+                    if (char === ' ') { span.style.width = '0.5em'; span.style.display = 'inline-block'; }
+                    numberRow.appendChild(span);
                 }
             });
+
+            wrapper.appendChild(numberRow);
+            container.appendChild(wrapper);
         }
 
         function calcCustomCard() {
-            const nameInput = document.getElementById('customName');
             const priceInput = document.getElementById('customPrice');
             const resultDisplay = document.getElementById('customResult');
             const resultUnit = document.getElementById('customUnitDisplay');
-            
             const totalImpact = parseFloat(document.getElementById('resultModal').getAttribute('data-total-impact')) || 0;
             const price = parseFloat(priceInput.value);
-
             if (price > 0 && totalImpact > 0) {
                 const count = Math.floor(totalImpact / price);
                 resultDisplay.innerText = count.toLocaleString();
@@ -855,11 +654,13 @@
             const slider = document.getElementById('opportunitySlider');
             const overlay = document.getElementById('sliderFadeOverlay');
             overlay.classList.remove('opacity-0');
-            slider.onscroll = () => {
-                const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5;
-                if (isEnd) overlay.classList.add('opacity-0');
-                else overlay.classList.remove('opacity-0');
-            };
+            // Drag Logic
+            let isDown = false, startX, scrollLeft;
+            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); slider.classList.remove('snap-x', 'snap-mandatory'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
+            slider.onscroll = () => { const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5; if (isEnd) overlay.classList.add('opacity-0'); else overlay.classList.remove('opacity-0'); };
         }
 
         function calculate() {
@@ -870,17 +671,16 @@
             const tDev = parseFloat(document.getElementById('tDev').value) || 0;
             const riskValue = parseFloat(document.getElementById('riskRegion').value) || 0;
 
-            const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
+            const fixedRadio = document.getElementById('bonusFixedRadio');
+            const noneRadio = document.getElementById('bonusNoneRadio');
+            const customRadio = document.getElementById('bonusCustomRadio');
+            
             let annualSalaryPackage = 0;
+            if (fixedRadio.checked) annualSalaryPackage = salary * 14;
+            else if (noneRadio.checked) annualPackage = salary * 12;
+            else if (customRadio.checked) annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
 
-            if (bonusType === '14') annualSalaryPackage = salary * 14;
-            else if (bonusType === '12') annualSalaryPackage = salary * 12;
-            else annualSalaryPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
-
-            const multiplier = 1.5; 
-            const workDays = 250;
-            const hoursPerMonth = 160;
-
+            const multiplier = 1.5; const workDays = 250; const hoursPerMonth = 160;
             const monthlyAvg = annualSalaryPackage / 12;
             const hourlyCost = (monthlyAvg * multiplier) / hoursPerMonth;
             const personAnnualCost = annualSalaryPackage * multiplier;
@@ -894,18 +694,42 @@
             const totalImpact = efficiencyLoss + finalRiskCost;
 
             document.getElementById('resultModal').setAttribute('data-total-impact', totalImpact);
-
             const resultContainer = document.getElementById('finalResultContainer');
+            
+            // Set flag for first run
+            isFirstSlide = true;
+            
             runSlotMachineAnimation(resultContainer, totalImpact);
-
             document.getElementById('efficiencyResult').innerText = formatCurrency(efficiencyLoss);
+            
+            // DELAY RENDER
+            const container = document.getElementById('opportunitySlider');
+            container.innerHTML = ''; 
+            setTimeout(() => { renderOpportunitySlider(totalImpact, personAnnualCost); }, 1500);
 
-            // Initial render with first batch
-            renderOpportunitySlider(totalImpact, personAnnualCost);
+            // Calculate Delay & Health
+            const teamSize = nDes + nDev;
+            const totalWastedHours = desAnnualHours + devAnnualHours;
+            // Updated Formula: (Total Wasted Hours / 8h) / 4 Quarters
+            const daysWastedPerQuarter = Math.round((totalWastedHours / 8 / 4) * 10) / 10;
+            document.getElementById('delayDays').innerText = daysWastedPerQuarter;
+
+            // Health Grade
+            const totalCapacityHours = teamSize * 8 * 250; 
+            const wastedRatio = totalWastedHours / totalCapacityHours;
+            let grade = 'A', gradeColor = 'from-green-400 to-emerald-600', gradeText = '健康';
+            if (wastedRatio > 0.05) { grade = 'B'; gradeColor = 'from-lime-400 to-green-600'; gradeText = '尚可'; }
+            if (wastedRatio > 0.10) { grade = 'C'; gradeColor = 'from-yellow-400 to-orange-500'; gradeText = '亞健康'; }
+            if (wastedRatio > 0.15) { grade = 'D'; gradeColor = 'from-orange-500 to-red-500'; gradeText = '危險'; }
+            if (wastedRatio > 0.20) { grade = 'F'; gradeColor = 'from-red-600 to-rose-900'; gradeText = '極度危險'; }
+            
+            const gradeEl = document.getElementById('healthGrade');
+            gradeEl.innerText = grade;
+            gradeEl.className = `text-4xl font-black text-transparent bg-clip-text bg-gradient-to-br ${gradeColor}`;
+            gradeEl.nextElementSibling.innerText = `/ ${gradeText}`;
 
             const riskEl = document.getElementById('riskBreakdown');
             const riskRes = document.getElementById('riskResult');
-            
             if (document.getElementById('wcagToggle').checked && riskValue > 0) {
                 riskEl.classList.remove('hidden');
                 if (riskValue === 1) {
@@ -920,23 +744,24 @@
             }
 
             const modal = document.getElementById('resultModal');
-            const modalContent = document.getElementById('modalContent');
-            
             modal.classList.remove('hidden');
             void modal.offsetWidth;
-            modal.classList.remove('opacity-0');
-            modalContent.classList.remove('scale-95');
-            modalContent.classList.add('scale-100');
+            modal.querySelector('#modalOverlay').classList.remove('opacity-0');
+            modal.querySelector('#modalPanel').classList.remove('opacity-0', 'scale-95');
+            modal.querySelector('#modalPanel').classList.add('opacity-100', 'scale-100');
             
             initSliderScroll();
         }
 
         function closeModal() {
             const modal = document.getElementById('resultModal');
-            const modalContent = document.getElementById('modalContent');
-            modal.classList.add('opacity-0');
-            modalContent.classList.remove('scale-100');
-            modalContent.classList.add('scale-95');
+            const overlay = document.getElementById('modalOverlay');
+            const panel = document.getElementById('modalPanel');
+            
+            overlay.classList.add('opacity-0');
+            panel.classList.remove('opacity-100', 'scale-100');
+            panel.classList.add('opacity-0', 'scale-95');
+            
             setTimeout(() => {
                 modal.classList.add('hidden');
             }, 300);
@@ -950,7 +775,6 @@
             }).format(num);
         }
 
-        // Init Pool on load
         window.onload = initPool;
     </script>
 </body>
