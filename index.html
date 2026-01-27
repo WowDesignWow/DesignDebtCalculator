@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V38 (Positive Number)</title>
+    <title>設計治理與合規風險試算 V39 (Calculation Fix)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -93,7 +93,6 @@
         
         <!-- App Header -->
         <div class="p-6 text-center flex-shrink-0 relative overflow-hidden border-b border-slate-800 bg-slate-900/80">
-          
             <h1 class="text-2xl font-bold mb-1 tracking-tight text-white mt-2">設計治理與風險試算</h1>
             <p class="text-slate-400 text-xs uppercase tracking-widest font-semibold">Efficiency Loss + Compliance Risk</p>
         </div>
@@ -138,11 +137,11 @@
                     <div class="w-8 h-8 rounded-lg bg-orange-500/10 flex items-center justify-center mr-3"><i class="fas fa-stopwatch text-orange-400"></i></div><span>治理缺失：效率耗損</span>
                 </div>
                 <div class="mb-5 pb-5 border-b border-slate-800 last:border-0 last:pb-0 pl-2">
-                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-pen-nib text-slate-500 mr-2"></i>設計師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點:無 SSOT / 狀態混亂</span></div>
+                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-pen-nib text-slate-500 mr-2"></i>設計師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點：無 SSOT / 狀態混亂</span></div>
                     <div class="flex gap-3"><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">團隊人數</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="nDes" value="5" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">人</div></div></div><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">每日浪費</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="tDes" value="0.75" step="0.25" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none bg-orange-500/5"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">小時</div></div></div></div>
                 </div>
                 <div class="pl-2">
-                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-code text-slate-500 mr-2"></i>工程師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點:重複 Override / 猜測</span></div>
+                    <div class="flex justify-between items-center mb-2"><label class="text-xs font-bold text-slate-300 flex items-center"><i class="fas fa-code text-slate-500 mr-2"></i>工程師</label><span class="text-[10px] text-orange-300 bg-orange-500/10 px-2 py-1 rounded border border-orange-500/20">痛點：重複 Override / 猜測</span></div>
                     <div class="flex gap-3"><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">團隊人數</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="nDev" value="3" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">人</div></div></div><div class="flex-1"><label class="text-[10px] text-slate-500 block mb-1 uppercase font-bold">每日浪費</label><div class="flex w-full rounded-xl border border-slate-700 bg-slate-950 overflow-hidden input-wrapper-custom"><input type="number" id="tDev" value="0.5" step="0.25" class="w-[70%] bg-transparent border-none p-2.5 pl-3 text-sm font-bold text-white focus:outline-none bg-orange-500/5"><div class="w-[30%] flex items-center justify-center border-l border-slate-700 bg-slate-900 text-xs text-slate-400">小時</div></div></div></div>
                 </div>
             </div>
@@ -222,7 +221,7 @@
                             <button onclick="closeModal()" class="text-slate-500 hover:text-white transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-slate-800 cursor-pointer"><i class="fas fa-times text-xl"></i></button>
                         </div>
 
-                        <!-- 1. BIG RESULT (Simplified) -->
+                        <!-- 1. BIG RESULT -->
                         <div class="mb-8 text-center" id="finalResultContainer"></div>
 
                         <!-- 2. Opportunity Slider (Reordered) -->
@@ -231,7 +230,6 @@
                                 <h3 class="text-xs font-bold text-sky-400 uppercase tracking-wide flex items-center"><i class="fas fa-search-dollar mr-2"></i> 這筆錢原本可以拿來...</h3>
                                 <div class="flex items-center">
                                     <button onclick="refreshOpportunities()" class="p-2 rounded-lg bg-slate-800 hover:bg-sky-600 text-sky-400 hover:text-white transition-all mr-3 cursor-pointer border border-slate-700" title="隨機換算"><i class="fas fa-dice text-lg transition-transform duration-500"></i></button>
-                                   
                                 </div>
                             </div>
                             <div class="relative"><div class="flex overflow-x-auto hide-scrollbar gap-3 pb-2 snap-x snap-mandatory items-stretch py-4 cursor-grab select-none active:cursor-grabbing" id="opportunitySlider"></div><div id="sliderFadeOverlay" class="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent pointer-events-none transition-opacity duration-300"></div></div>
@@ -369,12 +367,16 @@
             const totalImpact = totalImpactAttr ? parseFloat(totalImpactAttr) : 0;
             const salary = parseFloat(document.getElementById('salary').value) || 0;
             const bonusType = document.querySelector('input[name="bonusType"]:checked').value;
-            let annualPackage = 0;
-            if (bonusType === '14') annualPackage = salary * 14;
-            else if (bonusType === '12') annualPackage = salary * 12;
-            else annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
+            let annualSalaryPackage = 0; // FIXED Variable
+            const fixedRadio = document.getElementById('bonusFixedRadio');
+            const noneRadio = document.getElementById('bonusNoneRadio');
+            const customRadio = document.getElementById('bonusCustomRadio');
             
-            const personAnnualCost = annualPackage * 1.5; 
+            if (fixedRadio.checked) annualSalaryPackage = salary * 14;
+            else if (noneRadio.checked) annualSalaryPackage = salary * 12;
+            else if (customRadio.checked) annualSalaryPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
+            
+            const personAnnualCost = annualSalaryPackage * 1.5; 
             
             renderOpportunitySlider(totalImpact, personAnnualCost);
         }
@@ -646,10 +648,14 @@
             const noneRadio = document.getElementById('bonusNoneRadio');
             const customRadio = document.getElementById('bonusCustomRadio');
             
-            let annualSalaryPackage = 0;
-            if (fixedRadio.checked) annualSalaryPackage = salary * 14;
-            else if (noneRadio.checked) annualPackage = salary * 12;
-            else if (customRadio.checked) annualPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
+            let annualSalaryPackage = 0; // FIXED Variable
+            if (fixedRadio.checked) {
+                annualSalaryPackage = salary * 14;
+            } else if (noneRadio.checked) {
+                annualSalaryPackage = salary * 12;
+            } else if (customRadio.checked) {
+                annualSalaryPackage = (salary * 12) + (parseFloat(document.getElementById('customBonus').value) || 0);
+            }
 
             const multiplier = 1.5; const workDays = 250; const hoursPerMonth = 160;
             const monthlyAvg = annualSalaryPackage / 12;
@@ -746,7 +752,24 @@
             }).format(num);
         }
 
-        window.onload = initPool;
+        window.onload = () => {
+            initPool();
+            setupSliderDrag(); // Fix 3: Bind events once
+        };
+
+        // NEW: Separate setup function
+        function setupSliderDrag() {
+            const slider = document.getElementById('opportunitySlider');
+            const overlay = document.getElementById('sliderFadeOverlay');
+            if (!slider || !overlay) return;
+
+            let isDown = false, startX, scrollLeft;
+            slider.addEventListener('mousedown', (e) => { isDown = true; slider.classList.add('active'); slider.classList.remove('snap-x', 'snap-mandatory'); startX = e.pageX - slider.offsetLeft; scrollLeft = slider.scrollLeft; });
+            slider.addEventListener('mouseleave', () => { isDown = false; slider.classList.remove('active'); slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); slider.classList.add('snap-x', 'snap-mandatory'); });
+            slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
+            slider.onscroll = () => { const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5; if (isEnd) overlay.classList.add('opacity-0'); else overlay.classList.remove('opacity-0'); };
+        }
     </script>
 </body>
 </html>
