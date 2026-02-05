@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>設計治理與合規風險試算 V40 (Robust Logic)</title>
+    <title>設計治理與合規風險試算 V41 (AI Powered)</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -23,11 +23,16 @@
                     animation: { 
                         'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'flip-up': 'flipUp 0.5s cubic-bezier(0.2, 0.8, 0.2, 1) forwards',
+                        'shimmer': 'shimmer 2s linear infinite',
                     },
                     keyframes: {
                         flipUp: {
                             '0%': { opacity: '0', transform: 'rotateX(90deg) translateY(20px)' },
                             '100%': { opacity: '1', transform: 'rotateX(0deg) translateY(0)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-1000px 0' },
+                            '100%': { backgroundPosition: '1000px 0' }
                         }
                     }
                 }
@@ -61,13 +66,13 @@
         .hide-scrollbar::-webkit-scrollbar { display: none; }
         .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Markdown Table */
+        /* Markdown Styles for AI Content */
         .prose { max-width: none; color: #94a3b8; }
-        .prose table { width: 100%; border-collapse: collapse; margin-bottom: 1em; font-size: 12px; table-layout: fixed; }
-        .prose th, .prose td { border: 1px solid #334155; padding: 12px; text-align: left; vertical-align: top; width: 20%; word-wrap: break-word; }
-        .prose th { background-color: #1e293b; font-weight: 600; color: #f8fafc; position: sticky; top: 0; }
+        .prose h3 { color: #38bdf8; font-size: 1.1em; margin-top: 1em; margin-bottom: 0.5em; font-weight: 700; }
         .prose strong { color: #f1f5f9; font-weight: 600; }
-        .prose code { background-color: #1e293b; padding: 2px 6px; border-radius: 4px; color: #38bdf8; font-size: 0.9em; border: 1px solid #334155; }
+        .prose ul { list-style-type: disc; padding-left: 1.2em; margin-bottom: 1em; }
+        .prose li { margin-bottom: 0.3em; }
+        .prose p { margin-bottom: 0.8em; line-height: 1.6; }
         
         /* Interactive Inputs */
         .input-standard { transition: all 0.2s ease; border-color: #334155; }
@@ -84,6 +89,24 @@
         .cursor-grab { cursor: grab; }
         .cursor-grabbing { cursor: grabbing; }
         .card-flip { opacity: 0; transform-origin: top center; }
+
+        /* AI Gradient Animation */
+        .ai-gradient-border {
+            position: relative;
+            border-radius: 1rem;
+            z-index: 0;
+        }
+        .ai-gradient-border::before {
+            content: "";
+            position: absolute;
+            inset: -2px;
+            border-radius: 1.1rem;
+            background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+            background-size: 200% 200%;
+            animation: shimmer 3s linear infinite;
+            z-index: -1;
+            opacity: 0.7;
+        }
     </style>
 </head>
 <body class="min-h-screen flex items-center justify-center p-4">
@@ -298,6 +321,36 @@
                             </div>
                         </div>
 
+                        <!-- 6. ✨ Gemini AI Strategy Section ✨ -->
+                        <div class="mt-6 ai-gradient-border p-1">
+                            <div class="bg-slate-900 rounded-xl p-5 relative z-10">
+                                <div class="flex justify-between items-center mb-4">
+                                    <h3 class="font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 flex items-center">
+                                        <i class="fas fa-sparkles mr-2 text-yellow-300"></i> AI Design Ops 顧問
+                                    </h3>
+                                    <div class="text-[10px] text-slate-500 border border-slate-700 rounded px-2 py-0.5">Powered by Gemini</div>
+                                </div>
+                                
+                                <p class="text-xs text-slate-400 mb-4" id="aiIntroText">Gemini 將根據您目前的虧損數據（設計效率、開發溝通、合規風險），為您生成一份量身打造的改善策略與預算爭取說帖。</p>
+
+                                <button onclick="generateAIStrategy()" id="aiBtn" class="w-full bg-slate-800 hover:bg-slate-700 text-blue-300 hover:text-white font-bold py-3 rounded-lg transition-all border border-blue-900/30 hover:border-blue-500/50 flex items-center justify-center group relative overflow-hidden">
+                                    <div class="absolute inset-0 bg-blue-600/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                    <span class="relative z-10 flex items-center"><i class="fas fa-magic mr-2"></i> 生成改善策略與說帖</span>
+                                </button>
+
+                                <!-- AI Result Area -->
+                                <div id="aiResultArea" class="hidden mt-4 pt-4 border-t border-slate-800">
+                                    <div id="aiLoading" class="hidden flex flex-col items-center justify-center py-4 space-y-3">
+                                        <div class="w-8 h-8 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"></div>
+                                        <p class="text-xs text-blue-400 animate-pulse">Gemini 正在分析團隊數據並撰寫說帖...</p>
+                                    </div>
+                                    <div id="aiContent" class="hidden prose prose-invert prose-sm max-w-none text-xs text-slate-300">
+                                        <!-- Gemini Output Here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="mt-8">
                             <button onclick="closeModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl transition-all border border-slate-700 hover:border-slate-600 shadow-lg">關閉並調整策略</button>
                         </div>
@@ -308,6 +361,7 @@
     </div>
 
     <script>
+        const apiKey = ""; // API Key provided by environment
         let isFirstSlide = true; 
 
         // UPDATED POOL ITEMS (blue -> sky where appropriate)
@@ -745,6 +799,12 @@
             modal.querySelector('#modalPanel').classList.remove('opacity-0', 'scale-95');
             modal.querySelector('#modalPanel').classList.add('opacity-100', 'scale-100');
             
+            // Reset AI Section
+            document.getElementById('aiResultArea').classList.add('hidden');
+            document.getElementById('aiContent').innerHTML = '';
+            document.getElementById('aiBtn').classList.remove('hidden');
+            document.getElementById('aiIntroText').classList.remove('hidden');
+
             initSliderScroll();
         }
 
@@ -772,10 +832,9 @@
 
         window.onload = () => {
             initPool();
-            setupSliderDrag(); // Fix 3: Bind events once
+            setupSliderDrag(); 
         };
 
-        // NEW: Separate setup function
         function setupSliderDrag() {
             const slider = document.getElementById('opportunitySlider');
             const overlay = document.getElementById('sliderFadeOverlay');
@@ -787,6 +846,85 @@
             slider.addEventListener('mouseup', () => { isDown = false; slider.classList.remove('active'); slider.classList.add('snap-x', 'snap-mandatory'); });
             slider.addEventListener('mousemove', (e) => { if (!isDown) return; e.preventDefault(); const x = e.pageX - slider.offsetLeft; const walk = (x - startX) * 2; slider.scrollLeft = scrollLeft - walk; });
             slider.onscroll = () => { const isEnd = slider.scrollLeft + slider.clientWidth >= slider.scrollWidth - 5; if (isEnd) overlay.classList.add('opacity-0'); else overlay.classList.remove('opacity-0'); };
+        }
+
+        // --- GEMINI API INTEGRATION ---
+        async function generateAIStrategy() {
+            const btn = document.getElementById('aiBtn');
+            const resultArea = document.getElementById('aiResultArea');
+            const loading = document.getElementById('aiLoading');
+            const content = document.getElementById('aiContent');
+            const introText = document.getElementById('aiIntroText');
+
+            // UI State
+            btn.classList.add('hidden');
+            introText.classList.add('hidden');
+            resultArea.classList.remove('hidden');
+            loading.classList.remove('hidden');
+
+            // Gather Data
+            const nDes = document.getElementById('nDes').value;
+            const nDev = document.getElementById('nDev').value;
+            const tDes = document.getElementById('tDes').value;
+            const tDev = document.getElementById('tDev').value;
+            const riskRegion = document.getElementById('riskRegion').options[document.getElementById('riskRegion').selectedIndex].text;
+            const totalImpact = document.getElementById('resultModal').getAttribute('data-total-impact');
+            const formattedImpact = formatCurrency(totalImpact);
+
+            // Construct Prompt
+            const prompt = `
+                Act as a Senior Design Ops Director. I have used a calculator to estimate our "Design Debt".
+                Here is the data for my team:
+                - Team Size: ${nDes} Designers, ${nDev} Developers.
+                - Design Efficiency Issues (e.g. repetitive tasks): ${tDes} hours wasted/day per person.
+                - Developer Communication Issues (e.g. waiting/guessing): ${tDev} hours wasted/day per person.
+                - Compliance Risk Region: ${riskRegion}.
+                - Estimated Annual Loss: ${formattedImpact}.
+
+                Please provide a response in Traditional Chinese (繁體中文) formatted in Markdown.
+                The response should include:
+                1. A brief, empathetic "Diagnosis" (診斷) acknowledging the pain points.
+                2. A "3-Step Action Plan" (3步驟止血策略) to reduce this debt. Focus on high ROI actions like Design Tokens, SSOT, or Automation.
+                3. A short "Budget Pitch" (預算爭取說帖) that I can copy-paste to my boss, explaining why investing X amount to fix this saves ${formattedImpact} per year.
+                
+                Keep it professional, concise, and persuasive. Use emojis where appropriate.
+            `;
+
+            try {
+                const response = await fetch(
+                    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`,
+                    {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            contents: [{
+                                parts: [{ text: prompt }]
+                            }]
+                        })
+                    }
+                );
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const aiText = data.candidates[0].content.parts[0].text;
+
+                // Render
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+                content.innerHTML = marked.parse(aiText);
+
+            } catch (error) {
+                console.error('Gemini API Error:', error);
+                loading.classList.add('hidden');
+                content.classList.remove('hidden');
+                content.innerHTML = `<p class="text-red-400">AI 分析連線失敗，請稍後再試。<br>Error: ${error.message}</p>`;
+                btn.classList.remove('hidden'); // Allow retry
+            }
         }
     </script>
 </body>
